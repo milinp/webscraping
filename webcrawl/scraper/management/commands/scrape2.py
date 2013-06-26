@@ -36,6 +36,8 @@ class myThread (threading.Thread):
 def main():
 	
 	initiate()
+	start_time = time.time()
+
 	try:
 		soup = openURL(urls[0])
 		addLinks(soup)
@@ -59,7 +61,7 @@ def main():
 	#storage = scrape(soup)
 
 	#print storage
-	#print time.time() - start_time, "seconds"
+	print time.time() - start_time, "seconds"
 
 def startScrapper(urlForScrape):
 	time.sleep(wait)
@@ -98,8 +100,6 @@ def initiate():
 def openURL(url):
 	opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(jar))
 	htmltext = BeautifulSoup(opener.open(urls[0]))
-
-
 	#traceback.print_exc(file=sys.stdout) #prints entire stack trace
 	return htmltext
 

@@ -4,7 +4,9 @@
         <title>Webcrawler</title>   
     </head>
     <body>
- 
-        </form>
+ 		<form action="/results/" method="post">
+			{{ form_newsletter }}
+			<input type="submit" name="run_scraper" value="Run" />
+		</form>
     </body>
 </html> 
