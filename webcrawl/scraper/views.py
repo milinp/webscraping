@@ -9,5 +9,5 @@ def scraper(request):
 def results(request):
 	if 'run_scraper' in request.POST:
 		args = ['http://online.wsj.com/home-page', '0']
-		call_command('scrape3', *args)
+		call_command('masterScrape', *args)
 		return render(request, 'scraper/index.html')
