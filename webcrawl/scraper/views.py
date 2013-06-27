@@ -7,5 +7,7 @@ def scraper(request):
 	return render(request, 'scraper/index.html')
 
 def results(request):
-	call_command('scrape2')
-
+	if 'run_scraper' in request.POST:
+		args = ['http://online.wsj.com/home-page', '0']
+		call_command('scrape3', *args)
+		return render(request, 'scraper/index.html')

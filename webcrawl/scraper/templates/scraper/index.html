@@ -5,7 +5,7 @@
     </head>
     <body>
  		<form action="/results/" method="post">
-			{{ form_newsletter }}
+ 			{% csrf_token %}
 			<input type="submit" name="run_scraper" value="Run" />
 		</form>
     </body>
