@@ -1,0 +1,15 @@
+{% extends "scraper/index.html" %}
+
+{% block content %}
+	<p class="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+	{% autoescape off %}
+	<form action="/results/" method="post">
+		{% csrf_token %}
+		<input id="button" class="btn btn-primary" type="submit" name="run_scraper" value="Run" />
+	</form>
+	{% endautoescape off %}
+	<form action="/stop/" method="post">
+		{% csrf_token %}
+		<input id="button" class="btn btn-primary" type="submit" name="stop_scraper" value="Stop" />
+	</form>
+{% endblock content %}
