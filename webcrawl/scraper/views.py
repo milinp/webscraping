@@ -14,6 +14,27 @@ sched = Scheduler(standalone = True)
 location = ""
 
 def home(request):
+	if 'run_scraper' in request.POST:
+		logging.basicConfig()
+		global sched
+		sched = Scheduler(standalone = True)
+		args = ['http://pastebin.com/archive', '1', '120000000']
+		call_command('masterScrape', *args)	
+	
+		def scrape_sched():
+			call_command('masterScrape', *args)
+		sched.add_interval_job(scrape_sched, seconds = 120000000, max_instances = 1000)
+		sched.start()
+		return render(request, 'scraper/scraper.html')
+
+
+	if 'stop_scraper' in request.POST:
+		args = ['stop']
+		call_command('masterScrape', *args)
+		sched.shutdown(wait = False)
+
+		return render(request, 'scraper/scraper.html')
+
 	return render(request, 'scraper/scraper.html')
 
 def results(request):
@@ -21,11 +42,21 @@ def results(request):
 		logging.basicConfig()
 		global sched
 		sched = Scheduler(standalone = True)
-		args = ['http://pastebin.com', '0', '10']
+		args = ['http://pastebin.com/archive', '1', '120000000']
+		call_command('masterScrape', *args)	
+	
 		def scrape_sched():
 			call_command('masterScrape', *args)
-		sched.add_interval_job(scrape_sched, seconds = 10, max_instances = 1000)
+		sched.add_interval_job(scrape_sched, seconds = 120000000, max_instances = 1000)
 		sched.start()
+		return render(request, 'scraper/index.html')
+
+
+	if 'stop_scraper' in request.POST:
+		args = ['stop']
+		call_command('masterScrape', *args)
+		sched.shutdown(wait = False)
+
 		return render(request, 'scraper/index.html')
 
 def stop(request):
@@ -52,6 +83,15 @@ def watchlist(request):
 
 	if 'match' in request.POST:
 		call_command('readfile', location)
+
+		sched = Scheduler(standalone = True)
+		
+
+
+		def scrape_sched():
+			call_command('readfile', location)
+		sched.add_interval_job(scrape_sched, seconds = 43200, max_instances = 1000)
+		sched.start()
 		
 
 	# Load documents for the list page
@@ -63,7 +103,6 @@ def watchlist(request):
 		{'documents': documents, 'form' : form},
 		context_instance = RequestContext(request)
 	)
-
 # def list(request):
 # 	#Handle file upload
 # 	if request.method == "POST":

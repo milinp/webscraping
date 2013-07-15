@@ -45,13 +45,16 @@ class myThread (threading.Thread):
         startScrapper(self.urlForScrape)
 
 def main(args):
+	global isStop
+	isStop = False
 	global urlArray
 	global url
-
-	unfinishedURLData = URLToVisit.objects.all()
-	if unfinishedURLData:
-		for unfinishedURL in unfinishedURLData:
-			urls.append(unfinishedURL.url)
+	# URLToVisit.objects.all().delete()
+	# unfinishedURLData = URLToVisit.objects.all()
+	# if unfinishedURLData:
+	# 	for unfinishedURL in unfinishedURLData:
+	# 		urls.append(unfinishedURL.url)
+	# 		URLToVisit.objects.all().delete()
 	url = args[0]
 	urls.append(url)
 	global url_key
@@ -59,15 +62,15 @@ def main(args):
 	wait = float(args[1])
 	try:
 		soup = openURL(urls[0])
-		urlArray = addLinks(soup)
+		urlArray.extend(addLinks(soup))
 		i = 0
 		#print "length of URL array - %d" % (len(urlArray))
 		for urlForScrape in urlArray:
 			print ("\n\n\tinside the for loop \n\n\n")
 			status = getStatus()
-			print status
+			#print status
 			print getTime()
-			if status or getTime() > 1:
+			if status or getTime() > float(args[2]) - 2:
 				print("We killed it")
 				#sys.exit(0)
 				#break
@@ -82,7 +85,7 @@ def main(args):
 				time.sleep(wait)
 				thread.start()
 				thread.join()
-
+				urlArray.pop(0)
 	except Exception as ex:
 		print "Exception in user code: " + str(ex)
 		print "URL: " + urls[0]  
@@ -101,12 +104,13 @@ def startScrapper(urlForScrape):
 	start_time = time.time()
 	urlSoup = ""
 	if not DummyVisited.objects.filter(url = urlForScrape).exists():
+		print "new entry = %s\n\n" % (urlForScrape)
 		urlSoup = openURL(urlForScrape)
 
-		urlArray.append(addLinks(urlSoup))
+		addLinks(urlSoup)
 		parsedText = scrape(urlSoup)
 		DummyVisited(url = urlForScrape, urlData = parsedText).save()
-		print "new entry = %s\n\n" % (urlForScrape)
+		
 	else:
 		print "Repeated entry  = %s" % (urlForScrape)
 
@@ -114,9 +118,9 @@ def scrape(soup):
 	if soup.findAll(text = True):
 		holder = []
 		for s in soup.findAll(text = True):
-			if "".join(s.encode("ascii", "ignore").split()):
-				holder.append("".join(s.encode("ascii", "ignore").split()))
-		return "".join(holder)
+			if " ".join(s.encode("ascii", "ignore").split()):
+				holder.append(" ".join(s.encode("ascii", "ignore").split()))
+		return " ".join(holder)
 
 def openURL(aURL):
 	#time.sleep(wait)
@@ -132,7 +136,7 @@ def addLinks(soup):
 		 	#check to make sure crawler stays within page domain
 		 	#also make sure crawler does not put an already visited page into the queue
 		 	if tag['href'].find(url_key) != -1 and not visited.has_key(tag['href'].encode("utf-8")):
-		 		urls.append(tag['href'].encode("utf-8"))
+		 		urlArray.append(tag['href'].encode("utf-8"))
 		 		visited[tag['href'].encode("utf-8")] = "1"
 	return urls	 
 

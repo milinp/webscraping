@@ -1,0 +1,283 @@
+Wal-Mart  
+Exxon Mobil  
+Chevron  
+General Electric  
+Bank of America Corp.  
+AT&T  
+Ford Motor  
+J.P. Morgan Chase & Co.  
+Hewlett-Packard  
+Berkshire Hathaway  
+Citigroup  
+Verizon Communications  
+McKesson  
+General Motors  
+Cardinal Health  
+CVS Caremark  
+Wells Fargo  
+International Business Machines  
+UnitedHealth Group  
+Procter & Gamble  
+Kroger  
+Costco Wholesale  
+Valero Energy  
+Boeing  
+Home Depot  
+Target  
+Walgreen  
+Johnson & Johnson  
+State Farm Insurance Cos.  
+Medco Health Solutions  
+Microsoft 
+United Technologies 
+Goldman Sachs Group  
+Pfizer  
+Marathon Oil  
+Lowe's 
+United Parcel Service  
+Lockheed Martin  
+Best Buy  
+Dow Chemical  
+Sears Holdings  
+PepsiCo  
+MetLife  
+Kraft Foods  
+Apple   
+Walt Disney  
+Cisco Systems  
+Comcast  
+FedEx  
+Northrop Grumman  
+New York Life Insurance  
+Prudential Financial  
+Sprint Nextel  
+Allstate  
+General Dynamics  
+Morgan Stanley  
+Liberty Mutual Insurance  
+Coca-Cola  
+Humana  
+Honeywell International  
+Abbott Laboratories  
+News Corp.  
+Sunoco  
+Time Warner  
+Johnson Controls  
+Delta Air Lines  
+Merck  
+DuPont  
+Tyson Foods  
+American Express  
+Rite Aid  
+TIAA-CREF  
+Massachusetts Mutual Life Insurance  
+Raytheon  
+Express Scripts  
+Hartford Financial Services  
+Travelers Cos.  
+Staples  
+Google  
+Macy's  
+International Paper  
+Oracle  
+Deere  
+McDonald's  
+Motorola  
+Eli Lilly  
+Coca-Cola Enterprises  
+Bristol-Myers Squibb  
+Northwestern Mutual 
+Emerson Electric  
+Nationwide  
+TJX  
+GMAC  
+Nike  
+Kimberly-Clark  
+J.C. Penney  
+Kohl's  
+Computer Sciences  
+Goodyear Tire & Rubber  
+Avnet  
+Manpower  
+Capital One Financial  
+Constellation Energy  
+Occidental Petroleum  
+Colgate-Palmolive  
+Xerox
+General Mills  
+Medtronic  
+Gap  
+Union Pacific  
+Loews  
+EMC  
+Coventry Health Care  
+Illinois Tool Works  
+Viacom 13,619 Multiple
+Toys "R" Us 13,568 Multiple
+Pepsi Bottling 13,219 Multiple
+Chubb 13,016 Troy
+CBS 13,015 Multiple
+Sara Lee 12,881 Waterford
+Kellogg 12,575 Multiple
+Qwest Communications  
+Aramark  
+PPG Industries  
+Office Depot  
+Eaton  
+Dollar General  
+Waste Management  
+Omnicom Group  
+Jabil Circuit 
+DISH Network  
+TRW Automotive Holdings 
+Navistar International 
+Jacobs Engineering Group 
+Sun Microsystems  
+Nucor 
+Danaher 
+United States Steel 
+Marriott International 
+ITT 
+SAIC 10,847 
+Yum Brands 
+Textron 
+Marsh & McLennan 
+Texas Instruments 
+Liberty Media 
+Avon Products 
+Parker Hannifin 
+Unum Group 
+Genuine Parts 
+Guardian Life Ins. Co. of America 
+Peter Kiewit Sons' 
+R.R. Donnelley & Sons 
+Starbucks 
+Lear 
+Xcel Energy 
+Penske Automotive Group 
+Fifth Third Bancorp  
+First Data  
+URS  
+GameStop  
+Lincoln National  
+CSX  
+Praxair  
+Automatic Data Processing  
+Principal Financial  
+Assurant 
+Limited Brands  
+Nordstrom  
+Air Products & Chemicals 
+Bank of New York Mellon Corp.  
+Republic Services 
+Ashland  
+Paccar 
+Owens & Minor  
+Whole Foods Market 
+DTE Energy  
+Norfolk Southern  
+Ameriprise Financial  
+Icahn Enterprises   
+Masco  
+Cablevision Systems  
+Huntsman  
+Eastman Kodak  
+Aon 7,595 Southfield
+Campbell Soup  
+C.H. Robinson Worldwide  
+Quest Diagnostics  
+Western Digital  
+Family Dollar Stores  
+Estée Lauder  
+VF 7,220 Multiple
+Darden Restaurants  
+Becton Dickinson 
+OfficeMax  
+Bed Bath & Beyond  
+Hertz Global Holdings  
+Sherwin-Williams  
+Precision Castparts  
+AutoZone  
+Henry Schein  
+Affiliated Computer Services  
+Thrivent Financial for Lutherans  
+Sonic Automotive  
+W.W. Grainger  
+CMS Energy  
+Fortune Brands  
+AECOM Technology  
+Symantec  
+SLM  
+DaVita  
+KeyCorp  
+Interpublic Group  
+First American Corp.  
+Avery Dennison  
+McGraw-Hill  
+Ecolab  
+Fidelity National Financial  
+Dover  
+Gannett  
+Barnes & Noble  
+Pitney Bowes  
+CC Media Holdings  
+Emcor Group  
+Weyerhaeuser  
+SunGard Data Systems  
+CH2M Hill  
+Clorox  
+Oshkosh   
+Advance Auto Parts  
+Corning  
+Mohawk Industries  
+PetSmart 
+YRC Worldwide  
+Dollar Tree  
+Dana Holding  
+Cameron International   
+Pacific Life  
+Jarden  
+Mutual of Omaha Insurance  
+Avis Budget Group   
+Autoliv  
+MasterCard  
+Celanese  
+Polo Ralph Lauren  
+Auto-Owners Insurance  
+Anixter International  
+Universal American  
+Ryder System  
+SPX  
+Foot Locker  
+O'Reilly Automotive  
+Owens Corning  
+Black & Decker  
+Big Lots  
+Laboratory Corp. of America  
+Wesco International  
+Meritor  
+NCR  
+Unisys  
+Lubrizol  
+Washington Post  
+Agilent Technologies  
+PepsiAmericas  
+Charles Schwab  
+Dick's Sporting Goods  
+Graybar Electric  
+AbitibiBowater   
+Airgas  
+Conseco  
+Rockwell Automation  
+American Financial Group  
+Kelly Services  
+RadioShack  
+CA  
+Sealed Air  
+Live Nation Entertainment  
+Fiserv  
+Host Hotels & Resorts  
+H&R Block 
+Northern Trust Corp.  
+CB Richard Ellis Group  
+Blockbuster 

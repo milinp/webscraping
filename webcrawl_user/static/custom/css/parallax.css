@@ -1,0 +1,10 @@
+*{
+	border: 1px dashed black;
+}
+#home { 
+background: url(http://interfacelift.com/wallpaper/D47cd523/03307_sfnighttimeskyline_1366x768.jpg) 50% 0 repeat fixed; min-height: 1000px;
+}
+ 
+#about { 
+background: url(http://interfacelift.com/wallpaper/D47cd523/03303_ripples_1366x768.jpg) 50% 0 no-repeat min-height: 1000px;  
+}
