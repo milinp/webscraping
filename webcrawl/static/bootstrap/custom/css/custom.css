@@ -1,9 +1,15 @@
+html, body{
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+}	
+
 body {
-	background: #eedfcc url('/static/img/bg3.jpg') no-repeat center top;
+	background: #eedfcc url('/static/img/dark-wood.jpg') no-repeat center top;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-background-size: cover;
 	overflow:hidden;
+	color: #FFF;
 }
 
 
