@@ -12,27 +12,43 @@
 
 		<div id="banner">
 			<div id="bannertext">
-				<h2>Import your watchlist</h2>
+				<h2>Welcome to "Webscraper" </h2>
+				<h5>Import your watchlist</h5>
 			</div>
 
 		</div>
 
 		<div id="content">
 			<h2>Upload</h2>
-			<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin pellentesque, est ut venenatis aliquam, lorem quam porttitor ligula, eget ultrices velit dui sed quam. Praesent vehicula placerat lectus. Nulla pede. Quisque a nulla quis massa pulvinar sagittis. Pellentesque neque massa, mattis vulputate, pellentesque nec, vehicula volutpat, purus. Proin pretium dui et nulla cursus eleifend. Aenean aliquam urna eget urna. Vestibulum euismod elit. Donec eget augue sit amet neque elementum pretium. Proin posuere lacus id lacus. Duis vel justo suscipit neque ornare iaculis.</p>
+			<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin pellentesque, est ut venenatis aliquam, lorem quam porttitor ligula, eget ultrices velit dui sed quam. Praesent vehicula placerat lectus. Nulla pede. Quisque a nulla quis massa pulvinar sagittis. Pellentesque neque massa, mattis vulputate, pellentesque nec, vehicula volutpat, purus. Proin pretium dui et nulla cursus eleifend. Aenean aliquam urna eget urna. Vestibulum euismod elit.</p>
 			
+	<!-- 		<div class="custom_file_upload">
+				<input type="text" class="file" name="file_info" value="browse">
+				<div class="file_upload">
+					<input type="file" id="file_upload" name="file_upload" value="Browse">
+				</div>
+			</div> -->
 			
-			<div class="file-input">
-				<input id="file-exploit" type="file"> 	
-				<input id="cover" type="text" placeHolder="Browse">
-			</div>
-			
+			<form action="{% url "home" %}" method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+				<div class="custom_file_upload">
+					<input type="text" class="file" name="file_info">
+					<div class="file_upload">
+						<input type="file" name="upload"/>
+					</div>
+				</div>
+				<input id="button" class="btn btn-primary" type="submit" name="import" value="Submit" />
+			</form>
 
 <!-- 			 <form method="post" enctype="multipart/form-data" action="">
 				<label for="text">Click to upload picture</label>
 				<input type="file" id="text">
 				<span id="filename"></span>
 			</form> -->
+			<div id="footer">
+				<a href="/logout/">Log Out</a>
+			</div>
+
 		</div>
 		
 		<script src="js/libs/modernizr-2.6.2.min.js"></script>

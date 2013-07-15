@@ -11,7 +11,6 @@ body {
   position: absolute; 
   height: 100%; 
   width: 100%; 
-
 }
 
 h1 { font-weight: 700; 
@@ -47,7 +46,6 @@ h2 {
   border-color: white transparent transparent transparent; /*border color should be same as div div background color*/
   border-style: solid;
   border-width: 50px;
-
 }
 
 #bannertext { width: 20em; 
@@ -56,7 +54,7 @@ h2 {
   left: 55%; 
   border: .5em solid #fff;
   margin-left: -12em; 
-  padding: 2em 0; 
+  padding: 1em 0; 
 
 }
 
@@ -117,3 +115,70 @@ h2 {
 }
 label {
     cursor: pointer;
+}
+
+
+input.file {
+  width: 150px;
+  height: 35px;
+  border: 1px solid #BBB;
+  border-right: 0;
+  color: #888;
+  padding: 5px;
+  
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-bottomleft: 5px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  
+  outline: none;
+}
+
+div.file_upload {
+  width: 120px;
+  height: 35px;
+  background: #7abcff;
+  background: -moz-linear-gradient(top,  #7abcff 0%, #60abf8 44%, #4096ee 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#7abcff), color-stop(44%,#60abf8), color-stop(100%,#4096ee));
+  background: -webkit-linear-gradient(top,  #7abcff 0%,#60abf8 44%,#4096ee 100%);
+  background: -o-linear-gradient(top,  #7abcff 0%,#60abf8 44%,#4096ee 100%);
+  background: -ms-linear-gradient(top,  #7abcff 0%,#60abf8 44%,#4096ee 100%);
+  background: linear-gradient(top,  #7abcff 0%,#60abf8 44%,#4096ee 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7abcff', endColorstr='#4096ee',GradientType=0 );
+
+  display: inline;
+  position: absolute;
+  overflow: hidden;
+  cursor: pointer;
+  
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -moz-border-radius-topright: 5px;
+  -moz-border-radius-bottomright: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  
+  font-weight: bold;
+  color: #FFF;
+  text-align: center;
+  padding: 0 0 0 0;
+}
+div.file_upload:before {
+  content: 'UPLOAD';
+  position: absolute;
+  left: 0; right: 0;
+  text-align: center;
+  
+  cursor: pointer;
+}
+
+div.file_upload input {
+  position: relative;
+  height: 30px;
+  width: 250px;
+  display: inline;
+  cursor: pointer;
+  opacity: 0;
+}
