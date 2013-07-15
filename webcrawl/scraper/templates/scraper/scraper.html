@@ -1,15 +1,29 @@
 {% extends "scraper/index.html" %}
 
 {% block content %}
-	<p class="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-	{% autoescape off %}
 	<form action="/" method="post">
 		{% csrf_token %}
 		<input id="button" class="btn btn-primary" type="submit" name="run_scraper" value="Run" />
 	</form>
-	{% endautoescape off %}
 	<form action="/" method="post">
 		{% csrf_token %}
 		<input id="button" class="btn btn-primary" type="submit" name="stop_scraper" value="Stop" />
 	</form>
+	<p class="lead">Import your watchlist.</p>
+    <form action="{% url "watchlist" %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p>{{ form.non_field_errors }}</p>
+        <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+        <p>
+            {{ form.docfile.errors }}
+            {{ form.docfile }}
+        </p>
+        <p><input id="button" class="btn btn-primary" type="submit" name="import" value="Upload" /></p>
+    </form>
+
+    <form action="/watchlist/" method="post">
+        {% csrf_token %}
+        <input id="button" class="btn btn-primary" type="submit" name="match" value="Match"/>
+    </form>
+
 {% endblock content %}
