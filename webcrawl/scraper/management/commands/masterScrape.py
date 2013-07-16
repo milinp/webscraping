@@ -12,7 +12,7 @@ import os, signal, subprocess
 from bs4 import BeautifulSoup
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management.base import make_option
-from scraper.models import Visited, URLToVisit, DummyVisited
+from scraper.models import ScrapeCheck
 
 url = ""
 wait = 0
@@ -103,13 +103,13 @@ def startScrapper(urlForScrape):
 	#print "URL for Scraping = %s \n\n" % (urlForScrape)
 	start_time = time.time()
 	urlSoup = ""
-	if not DummyVisited.objects.filter(url = urlForScrape).exists():
+	if not ScrapeCheck.objects.filter(url = urlForScrape).exists():
 		print "new entry = %s\n\n" % (urlForScrape)
 		urlSoup = openURL(urlForScrape)
 
 		addLinks(urlSoup)
 		parsedText = scrape(urlSoup)
-		DummyVisited(url = urlForScrape, urlData = parsedText).save()
+		ScrapeCheck(url = urlForScrape, urlData = parsedText).save()
 		
 	else:
 		print "Repeated entry  = %s" % (urlForScrape)
@@ -148,7 +148,7 @@ def stopScraping():
 	#urlArray = []
 	isStop = True
 	# for remainingUrl in urlArray:
-	# 	if not DummyVisited.objects.filter(url = remainingUrl).exists():
+	# 	if not ScrapeCheck.objects.filter(url = remainingUrl).exists():
 	# 		URLToVisit(url = remainingUrl).save()
 	# 
 
