@@ -7,22 +7,21 @@ function EasyPeasyParallax() {
         'margin-top': (scrollPos/4)+"px",
         'opacity': 1-(scrollPos/250),
     });
+}
 
-    var textOpacity = $('#bannertext').css('opacity');
-
-    if (textOpacity == 0) {
+function autoHideBannerText(){
+    var scrollPos = $(this).scrollTop();
+    if ( scrollPos > 258) {
         $('#bannertext').css('visibility','hidden');
-    }
-    else{
+    } else {
         $('#bannertext').css('visibility','visible');
-
     }
-
 }
 
 $(document).ready(function(){
     $(window).scroll(function() {
         EasyPeasyParallax();
+        autoHideBannerText();
     });
 
     $('#bannertext').hover(
