@@ -10,6 +10,9 @@ import threading
 import re
 import os, signal, subprocess
 from bs4 import BeautifulSoup
+from datetime import datetime
+import pytz
+from pytz import timezone
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management.base import make_option
 from scraper.models import ScrapeCheck
@@ -109,18 +112,48 @@ def startScrapper(urlForScrape):
 
 		addLinks(urlSoup)
 		parsedText = scrape(urlSoup)
-		ScrapeCheck(url = urlForScrape, urlData = parsedText).save()
+		publishTime = scrape_date(urlSoup)
+		ScrapeCheck(url = urlForScrape, urlData = parsedText, urlPublishedTime = str(publishTime)).save()
 		
 	else:
 		print "Repeated entry  = %s" % (urlForScrape)
 
+# returns content of pastebin page as a string
 def scrape(soup):
-	if soup.findAll(text = True):
-		holder = []
-		for s in soup.findAll(text = True):
-			if " ".join(s.encode("ascii", "ignore").split()):
-				holder.append(" ".join(s.encode("ascii", "ignore").split()))
-		return " ".join(holder)
+	textBody = ""
+	# check to see if div exists. It should because it's specific to pastebin.
+	if soup.findAll("textarea", attrs = {"id" : "paste_code"}):
+		for s in soup.find("textarea", attrs = {"id" : "paste_code"}):
+			textBody = s
+		return textBody
+	else: 
+		return "This is not the text you are looking for."
+
+# returns date of pastebin post as a datetime object
+def scrape_date(soup):
+	# check to see if div exists. It should because it's specific to pastebin.
+	if soup.findAll("div", attrs = {"class" : "paste_box_info"}):
+		# filter out the title attribute which holds the date
+		for s in soup.findAll("span", title = True, style = True, text = True):
+			dateString = s['title']
+
+		fmt = "%A %dth of %B %Y %I:%M:%S %p CDT" # specific format of the title attribute string
+
+		# grabs the pastebin time of post. pastebin time is default CDT (Central Date Time)
+		pastebinTime = datetime.strptime(dateString, fmt)
+		pastebinHour = datetime.strptime(dateString, fmt).hour
+
+		# this get's the difference between the CDT and our timezone
+		# should account for daylight savings time
+		CDTHour = datetime.now(timezone("CST6CDT")).hour
+		difference = datetime.now().hour - CDTHour
+
+		#return the adjusted time to enable a uniform storing of time
+		TMZAdjusted = pastebinTime.replace(hour = pastebinHour+difference)
+		return TMZAdjusted
+	else:
+		return datetime(1993, 5, 21, 0, 0, 0)
+
 
 def openURL(aURL):
 	#time.sleep(wait)

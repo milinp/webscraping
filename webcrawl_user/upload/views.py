@@ -36,6 +36,3 @@ def home(request):
 
 def logout(request):
 	return logout_then_login(request)
-
-def parallax(request):
-	return render(request, 'upload/parallax.html')
