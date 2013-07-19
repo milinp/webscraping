@@ -22,10 +22,11 @@ from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
-
-
-
 import boto
+from django.utils.timezone import utc
+import datetime
+from scraper.models import Visited, URLToVisit, DummyVisited, IndexedTable, WatchListDB, ModifiedWatchListDB
+
 
 class Command(BaseCommand):
   def handle(self, *args, **options):
@@ -65,7 +66,7 @@ class Screenshot(QWebView):
 
 def sendMail(filePath, fileName):
   msg = MIMEMultipart()
-  msg['Subject'] = 'Data Dumped found'
+  msg['Subject'] = 'Cyber Security Risk Notification'
   msg['From'] = 'astroprasad@gmail.com'
   msg['To'] = 'pranavkumar.patel@dowjones.com'
    
@@ -106,21 +107,42 @@ def takeScreenShots(url, urlname):
   # s.capture('http://pastebin.com/htiwBie8', 'pastebin5.png')
   # s.capture('http://pastebin.com/archive', 'pastebin6.png')
 
+def checkWatchListDB(aWatchWord):
+    # for remainingUrl in urlArray:
+  if not ModifiedWatchListDB.objects.filter(matchedWord = aWatchWord).exists():
+    return "00:00:00"
+  else:
+    dummydata = ModifiedWatchListDB.objects.get(matchedWord = aWatchWord)
+    print "checking database time"
+    print dummydata.modifiedTime.strftime('%Y-%m-%d %H:%M:%S')
+    return dummydata.modifiedTime.strftime('%Y-%m-%d %H:%M:%S')
+
+    '''
+    datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
+'Saturday, 15. December 2012 11:19AM'
+'''
 
 
-def main(args):
+#ef upDateWatchListDb(aWatchWord):
+ 
 
-  print "\t\t\t scheduling matching patterns start  \n\n\n"
-  #s3.get_bucket('media.yourdomain.com').get_key('examples/first_file.csv')
-    #conn = S3Connection 
-  conn = boto.connect_s3('AKIAJDT4XSQEYXW5WE2Q', 'dHXOjTTxe9e9RrRna2nzvAa+qO5pd1FR0cDpWN39')
-  bucket = conn.get_bucket('client1.bucket')
-  k = Key(bucket)
-  k.key = 'Fortune500ListCompanies1'
-#k.set_contents_from_filename('pastebin1.png')  
-  k.get_contents_to_filename((dirname(__file__) + '\\Fortune500ListCompanies1.txt'))
-  print dirname(__file__) + '\\Fortune500ListCompanies1.txt'
-  watchListFile = dirname(__file__) + '\\Fortune500ListCompanies1.txt'
+
+def insertIntoWatchList(aWatchWord):
+  print datetime.datetime.now()
+  modifiedTime = datetime.datetime.utcnow().replace(tzinfo = utc)
+  print modifiedTime 
+  if ModifiedWatchListDB.objects.filter(matchedWord = aWatchWord).exists():
+    dummydata = ModifiedWatchListDB.objects.get(matchedWord = aWatchWord)
+    print dummydata
+    dummydata.modifiedTime = modifiedTime
+    dummydata.save()
+    print "updating into the databse\n"
+  else:
+    print "inserting into the databse\n"
+    ModifiedWatchListDB(matchedWord = aWatchWord, modifiedTime = modifiedTime).save()
+
+
+def scanDatabaseForMatchList(watchListFile):
   print "saasdasdaasfsdfsdfsfafasdfasdfasdfsdffasf \n\n"
   print watchListFile
   with open(watchListFile) as f:
@@ -134,9 +156,17 @@ def main(args):
 
   for match in watchlist:
     try:
+     
+      time = str(checkWatchListDB(match))
+      print time
+      print datetime.datetime.now()
+      newModifiedTime = datetime.datetime.utcnow().replace(tzinfo = utc).strftime('%Y-%m-%d %H:%M:%S')
+      print newModifiedTime 
+      #Select * From scraper_dummyvisited where modifiedTime Between '2013-07-16' AND '2013-07-17';
       matchingword = match.rstrip()
-      sql = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%'"  % (matchingword)
-      #print sql
+      sql = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%' AND modifiedTime Between '%s' AND '%s';"  % (matchingword, time, newModifiedTime  )
+
+      print sql
       keyword = match
       cursor.execute(sql)
       i = 0
@@ -152,18 +182,50 @@ def main(args):
         directoryName = os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s' % (matchingword) +'.txt'
 
         #print directoryName
-        f = open(os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s' % (matchingword) +'.txt', 'w')
-        f.write(str(row) + "\n")
-       
+              #print results
+
+      #print results
+      insertIntoWatchList(match)
+
       if results: 
         fileName = matchingword + '.txt'
         filePathName =  os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s' % (matchingword) +'.txt' 
-        print "Size of the file\n\n"
-        tempFileSize = os.path.getsize(filePathName)
+        
+        tempFileSize = os.path.getsize(filePathName)  
         fileSize = float(tempFileSize)
-        if fileSize < 20000:
+        print "Size of the file"
+        print fileSize 
+        if fileSize < 20000000:
           sendMail(filePathName,fileName)
     except Exception as ex:
       print "Exception in user code: " + str(ex)   
   f.close()
   db.close()
+
+
+
+def main(args):
+
+  print "\t\t\t scheduling matching patterns start  \n\n\n"
+  #s3.get_bucket('media.yourdomain.com').get_key('examples/first_file.csv')
+    #conn = S3Connection 
+  conn = boto.connect_s3('AKIAJDT4XSQEYXW5WE2Q', 'dHXOjTTxe9e9RrRna2nzvAa+qO5pd1FR0cDpWN39')
+  bucket = conn.get_bucket('client1.bucket')
+  for key in bucket.list():
+    filename = key.name.encode('utf-8')
+    print "File name is : "
+    print filename
+    key.get_contents_to_filename((dirname(__file__) +'\\'+ filename))
+    watchListFile =  dirname(__file__) +'\\'+filename
+    print "Printing watchlist"
+    print watchListFile
+    scanDatabaseForMatchList(watchListFile)
+
+'''
+  k = Key(bucket)
+  k.key = 'Fortune500ListCompanies1'
+#k.set_contents_from_filename('pastebin1.png')  
+  k.get_contents_to_filename((dirname(__file__) + '\\Fortune500ListCompanies1.txt'))
+  print dirname(__file__) + '\\Fortune500ListCompanies1.txt'
+  watchListFile = dirname(__file__) + '\\Fortune500ListCompanies1.txt'
+'''
