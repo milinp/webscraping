@@ -112,8 +112,8 @@ def startScrapper(urlForScrape):
 
 		addLinks(urlSoup)
 		parsedText = scrape(urlSoup)
-		publishTime = scrape_date(urlSoup)
-		ScrapeCheck(url = urlForScrape, urlData = parsedText, urlPublishedTime = str(publishTime)).save()
+		modifiedTime = scrape_date(urlSoup)
+		ScrapeCheck(url = urlForScrape, urlData = parsedText, modifiedTime = modifiedTime).save()
 		
 	else:
 		print "Repeated entry  = %s" % (urlForScrape)
@@ -137,22 +137,25 @@ def scrape_date(soup):
 		for s in soup.findAll("span", title = True, style = True, text = True):
 			dateString = s['title']
 
-		fmt = "%A %dth of %B %Y %I:%M:%S %p CDT" # specific format of the title attribute string
-
-		# grabs the pastebin time of post. pastebin time is default CDT (Central Date Time)
-		pastebinTime = datetime.strptime(dateString, fmt)
-		pastebinHour = datetime.strptime(dateString, fmt).hour
+		# parses the pastebin time of post. pastebin time is default CDT (Central Date Time)
+		pastebinTime = dparser.parse(dateString)
+		pastebinHour = dparser.parse(dateString).hour
 
 		# this get's the difference between the CDT and our timezone
 		# should account for daylight savings time
-		CDTHour = datetime.now(timezone("CST6CDT")).hour
+		CDTHour = datetime.now(timezone("utc")).hour - 5 # CDT = UTC - 5
 		difference = datetime.now().hour - CDTHour
 
+		# if pastebinHour+difference == 24:
+		# 	fixedHour = 0
+		# else:
+		# 	fixedHour = pastebinHour+difference
+
 		#return the adjusted time to enable a uniform storing of time
-		TMZAdjusted = pastebinTime.replace(hour = pastebinHour+difference)
-		return TMZAdjusted
+		# TMZAdjusted = pastebinTime.replace(hour = pastebinHour)
+		return pastebinTime
 	else:
-		return datetime(1993, 5, 21, 0, 0, 0)
+		return datetime(1993, 5, 21, 0, 0, 0, 0, None)
 
 
 def openURL(aURL):

@@ -37,8 +37,10 @@ def main():
 			print dateObject
 			urlToFetch = basket[i].url
 			actualRow = DummyVisited.objects.get(url = urlToFetch)
-			DummyVisited.objects.get(url = urlToFetch).modifiedTime = dateObject
-			DummyVisited.objects.get(url = urlToFetch).save()
+			actualRow.modifiedTime = dateObject
+			print actualRow.modifiedTime
+			actualRow.save()
+			print DummyVisited.objects.get(url= urlToFetch).modifiedTime
 		except Exception as ex:
 			print "Exception: " + str(ex)
 		i = i + 1
@@ -63,12 +65,18 @@ def scrape_date(soup):
 
 		# this get's the difference between the CDT and our timezone
 		# should account for daylight savings time
-		CDTHour = datetime.now(timezone("CST6CDT")).hour
+		CDTHour = datetime.now(timezone("utc")).hour - 5 # CDT = UTC - 5
 		difference = datetime.now().hour - CDTHour
 
+		# if pastebinHour+difference == 24:
+		# 	fixedHour = 0
+		# else:
+		# 	fixedHour = pastebinHour+difference
+
 		#return the adjusted time to enable a uniform storing of time
-		TMZAdjusted = pastebinTime.replace(hour = pastebinHour+difference)
-		TMZAdjusted.strftime('%Y-%m-%d %H:%M:%S')
-		return TMZAdjusted
+		# TMZAdjusted = pastebinTime.replace(hour = pastebinHour)
+		return pastebinTime
 	else:
-		return datetime(1993, 5, 21, 0, 0, 0).strftime('%Y-%m-%d %H:%M:%S')
+		return datetime(1993, 5, 21, 0, 0, 0, 0, None)
+
+# strftime('%Y-%m-%d %H:%M:%S %Z')
