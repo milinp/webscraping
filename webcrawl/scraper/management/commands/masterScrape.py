@@ -1,3 +1,4 @@
+import httplib2
 import urllib2
 import urlparse
 import sys
@@ -9,7 +10,7 @@ import time
 import threading
 import re
 import os, signal, subprocess
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 from datetime import datetime
 import dateutil.parser as dparser 
 import pytz
@@ -18,6 +19,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management.base import make_option
 from scraper.models import DummyVisited
 import pytz
+
+
 url = ""
 wait = 0
 url_key = "fafa"
@@ -65,14 +68,17 @@ def main(args):
 	url_key = urlparse.urlsplit(urls[0]).netloc
 	wait = float(args[1])
 	try:
-		soup = openURL(urls[0])
-		urlArray.extend(addLinks(soup))
+		urlArray = []
+		soup = openURL("http://pastebin.com/archive")
+		addLinks(soup)
 		i = 0
+		print "\n\n\n---------------------------------------Restarting----------------------------------------------------------------------------\n\n"
+		print "Length of urlArray = %d\n\n\n" % (len(urlArray))
+		print urlArray
 		#print "length of URL array - %d" % (len(urlArray))
 		for urlForScrape in urlArray:
-			print ("\n\n\tinside the for loop \n\n\n")
+			#print ("\n\n\tinside the for loop \n\n\n")
 			status = getStatus()
-			#print status
 			print getTime()
 			if status or getTime() > float(args[2]) - 2:
 				print("We killed it")
@@ -84,12 +90,19 @@ def main(args):
 			else: 
 				i = i + 1
 				threadName = "Thread number %d" % (i)
-				print ("Thread name = %s" % (threadName))
+				#print ("Thread name = %s" % (threadName))
 				thread = myThread(1, threadName, i, urlForScrape)
 				time.sleep(wait)
 				thread.start()
 				thread.join()
 				urlArray.pop(0)
+
+			if len(urlArray) == 1:
+				print "\n\n\n"
+				print urlArray
+				print "\n\n\n"
+				addLinks(soup)
+		
 	except Exception as ex:
 		print "Exception in user code: " + str(ex)
 		print "URL: " + urls[0]  
@@ -110,8 +123,6 @@ def startScrapper(urlForScrape):
 	if not DummyVisited.objects.filter(url = urlForScrape).exists():
 		print "new entry = %s\n\n" % (urlForScrape)
 		urlSoup = openURL(urlForScrape)
-
-		addLinks(urlSoup)
 		parsedText = scrape(urlSoup)
 		modifiedTime = scrape_date(urlSoup)
 		DummyVisited(url = urlForScrape, urlData = parsedText, modifiedTime = modifiedTime).save()
@@ -166,16 +177,29 @@ def openURL(aURL):
 	return htmltext
 
 def addLinks(soup):
-	#time.sleep(wait)
+	maintable = soup.find("table", attrs = {"class" : "maintable"})
+	if maintable:
+		for a in maintable.findAll("a"):
+			if "archive" not in a['href']:
+		 		a['href'] = urlparse.urljoin("http://pastebin.com/", a['href'])
+				urlArray.append(a['href'])
+	'''
 	for tag in soup.findAll("a", href = True):
 		 	tag['href'] = urlparse.urljoin(url, tag['href'])
 		 	tag['href'].encode("utf-8")
 		 	#check to make sure crawler stays within page domain
 		 	#also make sure crawler does not put an already visited page into the queue
-		 	if tag['href'].find(url_key) != -1 and not visited.has_key(tag['href'].encode("utf-8")):
+		 	# if tag['href'].find(url_key) != -1 and not visited.has_key(tag['href'].encode("utf-8")):
+		 	# 	urlArray.append(tag['href'].encode("utf-8"))
+		 	# 	visited[tag['href'].encode("utf-8")] = "1"
+		 	if tag['href'].find(url_key) != -1:
 		 		urlArray.append(tag['href'].encode("utf-8"))
-		 		visited[tag['href'].encode("utf-8")] = "1"
+		 		#visited[tag['href'].encode("utf-8")] = "1"
 	return urls	 
+	'''
+
+
+	
 
 def stopScraping():
 	global isStop

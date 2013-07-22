@@ -66,7 +66,7 @@ class Screenshot(QWebView):
 
 def sendMail(filePath, fileName):
   msg = MIMEMultipart()
-  msg['Subject'] = 'Cyber Security Risk Notification'
+  msg['Subject'] = 'Dow Jones Cyber Security Risk Notification'
   msg['From'] = 'astroprasad@gmail.com'
   msg['To'] = 'pranavkumar.patel@dowjones.com'
    
@@ -113,8 +113,8 @@ def checkWatchListDB(aWatchWord):
     return "00:00:00"
   else:
     dummydata = ModifiedWatchListDB.objects.get(matchedWord = aWatchWord)
-    print "checking database time"
-    print dummydata.modifiedTime.strftime('%Y-%m-%d %H:%M:%S')
+    #print "checking database time"
+    #print dummydata.modifiedTime.strftime('%Y-%m-%d %H:%M:%S')
     return dummydata.modifiedTime.strftime('%Y-%m-%d %H:%M:%S')
 
     '''
@@ -128,12 +128,12 @@ def checkWatchListDB(aWatchWord):
 
 
 def insertIntoWatchList(aWatchWord):
-  print datetime.datetime.now()
+  #print datetime.datetime.now()
   modifiedTime = datetime.datetime.utcnow().replace(tzinfo = utc)
-  print modifiedTime 
+  #print modifiedTime 
   if ModifiedWatchListDB.objects.filter(matchedWord = aWatchWord).exists():
     dummydata = ModifiedWatchListDB.objects.get(matchedWord = aWatchWord)
-    print dummydata
+    #print dummydata
     dummydata.modifiedTime = modifiedTime
     dummydata.save()
     print "updating into the databse\n"
@@ -142,12 +142,15 @@ def insertIntoWatchList(aWatchWord):
     ModifiedWatchListDB(matchedWord = aWatchWord, modifiedTime = modifiedTime).save()
 
 
-def scanDatabaseForMatchList(watchListFile):
-  print "saasdasdaasfsdfsdfsfafasdfasdfasdfsdffasf \n\n"
+def scanDatabaseForMatchList(watchListFile, aFileName):
+  print "inside Scan database"
+  listOfFiles = []
+  
   print watchListFile
   with open(watchListFile) as f:
       watchlist = f.readlines()
-      #print watchlist
+      print "saasdasdaasfsdfsdfsfafasdfasdfasdfsdffasf \n\n"
+      print watchlist
       print "\n\n\nChecking with the database......"
 
   db = MySQLdb.connect(host="interns-web.cwlx8eld8gjz.us-east-1.rds.amazonaws.com",user="interns",passwd="Dowjones1",db="url_info" )
@@ -156,47 +159,74 @@ def scanDatabaseForMatchList(watchListFile):
 
   for match in watchlist:
     try:
-     
+      i = 0
+      f = open(os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s_%d' % (aFileName, i) +'.txt', 'w')
+      f.close()
       time = str(checkWatchListDB(match))
-      print time
-      print datetime.datetime.now()
+      #print time
+      #print datetime.datetime.now()
       newModifiedTime = datetime.datetime.utcnow().replace(tzinfo = utc).strftime('%Y-%m-%d %H:%M:%S')
-      print newModifiedTime 
+      #print newModifiedTime 
       #Select * From scraper_dummyvisited where modifiedTime Between '2013-07-16' AND '2013-07-17';
       matchingword = match.rstrip()
+      #sql = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%';"  % (matchingword)
       sql = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%' AND modifiedTime Between '%s' AND '%s';"  % (matchingword, time, newModifiedTime  )
 
       print sql
-      keyword = match
+      keyword = matchingword
       cursor.execute(sql)
-      i = 0
+      
       results = cursor.fetchall()
       for row in results:
-        i = i + 1
+        print "\n\n\n"
+        print row
+        print "\n\n\n"
+
+        print "inside for loop"
+       
+        fileName = "%s_%d.txt" %(aFileName, i)
+        filePathName =  os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s_%d' % (aFileName, i) +'.txt' 
+        print filePathName
         urlname = '%s-%d.png' % (matchingword , i)
         #print row
 
         matches=re.findall(r'\'(.+?)\'',str(row))
        # print "this is the url  %s" % matches[0]
         #takeScreenShots(matches[0], urlname)
-        directoryName = os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s' % (matchingword) +'.txt'
+        directoryName = os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s' % (aFileName) +'.txt'
 
         #print directoryName
               #print results
-
-      #print results
-      insertIntoWatchList(match)
-
-      if results: 
-        fileName = matchingword + '.txt'
-        filePathName =  os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s' % (matchingword) +'.txt' 
-        
         tempFileSize = os.path.getsize(filePathName)  
         fileSize = float(tempFileSize)
         print "Size of the file"
         print fileSize 
         if fileSize < 20000000:
-          sendMail(filePathName,fileName)
+          f = open(filePathName, 'a')
+          #print "inside the if condition"
+          #print fileSize
+          f.write("\n\n\n-------------------------------------------------------------------------------------------------------------------\n\n")
+          f.write("KEYWORD: " + matchingword + "\n\n\n") 
+          print ("Data Dump URL:  " + str(row[1]) + "\n\n\n")
+          f.write("Data Dump URL:  " + str(row[0]) + "\n\n\n")
+          f.write("Content:  \n\n")
+          f.write(str(row[1]) + "\n\n")
+          f.write("-------------------------------------------------------------------------------------------------------------------------\n")
+          f.close()
+        else:
+          listOfFiles.add(fileName);
+          i = i + 1
+      #print results
+      insertIntoWatchList(match)
+        
+        
+        
+
+      print "Printing the list of files \n\n\n\n"
+      print listOfFiles;
+      print fileName
+      print filePathName
+      sendMail(filePathName,fileName)    
     except Exception as ex:
       print "Exception in user code: " + str(ex)   
   f.close()
@@ -218,9 +248,9 @@ def main(args):
     key.get_contents_to_filename((dirname(__file__) +'\\'+ filename))
     watchListFile =  dirname(__file__) +'\\'+filename
     print "Printing watchlist"
-    print watchListFile
-    scanDatabaseForMatchList(watchListFile)
-
+    #print watchListFile
+    if filename == "Fortune500List":
+        scanDatabaseForMatchList(watchListFile,filename)  
 '''
   k = Key(bucket)
   k.key = 'Fortune500ListCompanies1'

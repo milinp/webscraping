@@ -18,12 +18,12 @@ def home(request):
 		logging.basicConfig()
 		global sched
 		sched = Scheduler(standalone = True)
-		args = ['http://pastebin.com/archive', '1', '120000000']
+		args = ['http://pastebin.com/archive', '1', '180']
 		call_command('masterScrape', *args)	
 	
 		def scrape_sched():
 			call_command('masterScrape', *args)
-		sched.add_interval_job(scrape_sched, seconds = 120000000, max_instances = 1000)
+		sched.add_interval_job(scrape_sched, seconds = 180, max_instances = 1000)
 		sched.start()
 		return render(request, 'scraper/scraper.html')
 
@@ -42,12 +42,12 @@ def results(request):
 		logging.basicConfig()
 		global sched
 		sched = Scheduler(standalone = True)
-		args = ['http://pastebin.com/archive', '1', '120000000']
+		args = ['http://pastebin.com/archive', '1', '180']
 		call_command('masterScrape', *args)	
 	
 		def scrape_sched():
 			call_command('masterScrape', *args)
-		sched.add_interval_job(scrape_sched, seconds = 120000000, max_instances = 1000)
+		sched.add_interval_job(scrape_sched, seconds = 180, max_instances = 1000)
 		sched.start()
 		return render(request, 'scraper/index.html')
 
@@ -85,12 +85,9 @@ def watchlist(request):
 		call_command('readfile', location)
 
 		sched = Scheduler(standalone = True)
-		
-
-
-		def scrape_sched():
+		def match_sched():
 			call_command('readfile', location)
-		sched.add_interval_job(scrape_sched, seconds = 43200, max_instances = 1000)
+		sched.add_interval_job(match_sched, seconds = 20, max_instances = 1000)
 		sched.start()
 		
 
