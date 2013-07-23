@@ -25,6 +25,14 @@ class DummyVisited(models.Model):
 	def __unicode__(self):
 		return "URL: %s" % self.url
 
+class PastebinEntries(models.Model):
+	url = models.CharField(primary_key = True, max_length = 255)
+	urlData = models.TextField()
+	modifiedTime = models.DateTimeField()
+	def __unicode__(self):
+		return "URL: %s" % self.url
+
+
 class Document(models.Model):
 	docfile = models.FileField(upload_to='Watchlists')
 	def __unicode__(self):

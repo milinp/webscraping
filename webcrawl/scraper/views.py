@@ -87,7 +87,7 @@ def watchlist(request):
 		sched = Scheduler(standalone = True)
 		def match_sched():
 			call_command('readfile', location)
-		sched.add_interval_job(scrape_sched, seconds = 20, max_instances = 1000)
+		sched.add_interval_job(match_sched, seconds = 20, max_instances = 1000)
 		sched.start()
 		
 

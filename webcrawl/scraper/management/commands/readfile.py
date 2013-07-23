@@ -25,7 +25,7 @@ from boto.s3.key import Key
 import boto
 from django.utils.timezone import utc
 import datetime
-from scraper.models import Visited, URLToVisit, DummyVisited, IndexedTable, WatchListDB, ModifiedWatchListDB
+from scraper.models import Visited, URLToVisit, DummyVisited, IndexedTable, WatchListDB, ModifiedWatchListDB, PastebinEntries
 
 
 class Command(BaseCommand):
@@ -170,8 +170,8 @@ def scanDatabaseForMatchList(watchListFile, aFileName):
       #Select * From scraper_dummyvisited where modifiedTime Between '2013-07-16' AND '2013-07-17';
       matchingword = match.rstrip()
       #sql = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%';"  % (matchingword)
-      sql = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%' AND modifiedTime Between '%s' AND '%s';"  % (matchingword, time, newModifiedTime  )
-
+      #sql = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%' AND modifiedTime Between '%s' AND '%s';"  % (matchingword, time, newModifiedTime  )
+      sql = "SELECT * from scraper_dummyvisited where urlData LIKE '%%%s%%' order by modifiedTime desc LIMIT 1;" % (matchingword)
       print sql
       keyword = matchingword
       cursor.execute(sql)

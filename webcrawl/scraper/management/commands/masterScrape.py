@@ -12,12 +12,13 @@ import re
 import os, signal, subprocess
 from bs4 import BeautifulSoup, SoupStrainer
 from datetime import datetime
+from django.utils.timezone import utc
 import dateutil.parser as dparser 
 import pytz
 from pytz import timezone
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management.base import make_option
-from scraper.models import DummyVisited
+from scraper.models import DummyVisited, PastebinEntries
 import pytz
 
 
@@ -104,8 +105,9 @@ def startScrapper(urlForScrape):
 		urlSoup = openURL(urlForScrape)
 		parsedText = scrape(urlSoup)
 		modifiedTime = scrape_date(urlSoup)
-		print "\n\n\modifiedTime Time\n\n\n"
-		print modifiedTime
+		#modifiedTime = datetime.utcnow().replace(tzinfo = utc).strftime('%Y-%m-%d %H:%M:%S')
+		#print "modifiedTime Time"
+		#print parsedText
 		DummyVisited(url = urlForScrape, urlData = parsedText, modifiedTime = modifiedTime).save()
 		
 	else:
@@ -116,7 +118,7 @@ def scrape(soup):
 	# check to see if div exists. It should because it's specific to pastebin.
 	if soup.findAll("textarea", attrs = {"id" : "paste_code"}):
 		for s in soup.find("textarea", attrs = {"id" : "paste_code"}):
-			textBody = s
+			textBody = s.encode("ascii","ignore")
 		return textBody
 	else: 
 		return "This is not the text you are looking for."
