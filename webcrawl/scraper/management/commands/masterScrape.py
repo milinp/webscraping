@@ -21,6 +21,7 @@ from scraper.models import DummyVisited
 import pytz
 
 
+
 url = ""
 wait = 0
 url_key = "fafa"
@@ -48,7 +49,6 @@ class myThread (threading.Thread):
         self.counter = counter
         self.urlForScrape = urlForScrape
     def run(self):
-        #print "/n %s /n"  % (self.name)
         startScrapper(self.urlForScrape)
 
 def main(args):
@@ -56,12 +56,6 @@ def main(args):
 	isStop = False
 	global urlArray
 	global url
-	# URLToVisit.objects.all().delete()
-	# unfinishedURLData = URLToVisit.objects.all()
-	# if unfinishedURLData:
-	# 	for unfinishedURL in unfinishedURLData:
-	# 		urls.append(unfinishedURL.url)
-	# 		URLToVisit.objects.all().delete()
 	url = args[0]
 	urls.append(url)
 	global url_key
@@ -75,22 +69,14 @@ def main(args):
 		print "\n\n\n---------------------------------------Restarting----------------------------------------------------------------------------\n\n"
 		print "Length of urlArray = %d\n\n\n" % (len(urlArray))
 		print urlArray
-		#print "length of URL array - %d" % (len(urlArray))
 		for urlForScrape in urlArray:
-			#print ("\n\n\tinside the for loop \n\n\n")
 			status = getStatus()
 			print getTime()
 			if status or getTime() > float(args[2]) - 2:
 				print("We killed it")
-				#sys.exit(0)
-				#break
-				
-				#threads.append(thread)
-			#	print ("\n\n length of threads = %d" % (len(threads)))
 			else: 
 				i = i + 1
 				threadName = "Thread number %d" % (i)
-				#print ("Thread name = %s" % (threadName))
 				thread = myThread(1, threadName, i, urlForScrape)
 				time.sleep(wait)
 				thread.start()
@@ -106,18 +92,11 @@ def main(args):
 	except Exception as ex:
 		print "Exception in user code: " + str(ex)
 		print "URL: " + urls[0]  
-   	# for t in threads:
-   	# 	t.join()
 
-	#storage = scrape(soup)
-
-	#print storage
-	#print time.time() - start_time, "seconds"
 def getStatus()	:
 	return isStop
 
 def startScrapper(urlForScrape):
-	#print "URL for Scraping = %s \n\n" % (urlForScrape)
 	start_time = time.time()
 	urlSoup = ""
 	if not DummyVisited.objects.filter(url = urlForScrape).exists():
@@ -125,12 +104,13 @@ def startScrapper(urlForScrape):
 		urlSoup = openURL(urlForScrape)
 		parsedText = scrape(urlSoup)
 		modifiedTime = scrape_date(urlSoup)
+		print "\n\n\modifiedTime Time\n\n\n"
+		print modifiedTime
 		DummyVisited(url = urlForScrape, urlData = parsedText, modifiedTime = modifiedTime).save()
 		
 	else:
 		print "Repeated entry  = %s" % (urlForScrape)
 
-# returns content of pastebin page as a string
 def scrape(soup):
 	textBody = ""
 	# check to see if div exists. It should because it's specific to pastebin.
@@ -151,20 +131,6 @@ def scrape_date(soup):
 
 		# parses the pastebin time of post. pastebin time is default CDT (Central Date Time)
 		pastebinTime = dparser.parse(dateString)
-		pastebinHour = dparser.parse(dateString).hour
-
-		# this get's the difference between the CDT and our timezone
-		# should account for daylight savings time
-		CDTHour = datetime.now(timezone("utc")).hour - 5 # CDT = UTC - 5
-		difference = datetime.now().hour - CDTHour
-
-		# if pastebinHour+difference == 24:
-		# 	fixedHour = 0
-		# else:
-		# 	fixedHour = pastebinHour+difference
-
-		#return the adjusted time to enable a uniform storing of time
-		# TMZAdjusted = pastebinTime.replace(hour = pastebinHour)
 		return pastebinTime
 	else:
 		return datetime(1993, 5, 21, 0, 0, 0, 0, None)
@@ -208,10 +174,7 @@ def stopScraping():
 	print len(urlArray)
 	#urlArray = []
 	isStop = True
-	# for remainingUrl in urlArray:
-	# 	if not DummyVisited.objects.filter(url = remainingUrl).exists():
-	# 		URLToVisit(url = remainingUrl).save()
-	# 
+
 
 def startTimer():
 	global start_time
