@@ -5,13 +5,23 @@ function EasyPeasyParallax() {
     });
     $('#bannertext').css({
         'margin-top': (scrollPos/4)+"px",
-        'opacity': 1-(scrollPos/250)
+        'opacity': 1-(scrollPos/250),
     });
+}
+
+function autoHideBannerText(){
+    var scrollPos = $(this).scrollTop();
+    if ( scrollPos > 258) {
+        $('#bannertext').css('visibility','hidden');
+    } else {
+        $('#bannertext').css('visibility','visible');
+    }
 }
 
 $(document).ready(function(){
     $(window).scroll(function() {
         EasyPeasyParallax();
+        autoHideBannerText();
     });
 
     $('#bannertext').hover(
@@ -24,4 +34,8 @@ $(document).ready(function(){
                 scrollTop: $("#content").offset().top
             }, 1000, 'swing');
     });
+
+
+
+
 });
