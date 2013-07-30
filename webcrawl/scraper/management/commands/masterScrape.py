@@ -20,9 +20,10 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management.base import make_option
 from scraper.models import DummyVisited, PastebinEntries
 import pytz
-
-
-
+import warnings
+warnings.filterwarnings(
+        'ignore', r"DateTimeField received a naive datetime",
+        RuntimeWarning, r'django\.db\.models\.fields')
 url = ""
 wait = 0
 url_key = "fafa"
@@ -69,7 +70,11 @@ def main(args):
 		i = 0
 		print "\n\n\n---------------------------------------Restarting----------------------------------------------------------------------------\n\n"
 		print "Length of urlArray = %d\n\n\n" % (len(urlArray))
-		print urlArray
+		
+		file1 = open("urlArray.txt", "w");
+		for url1 in urlArray:
+  			file1.write("%s\n" % url1)
+  				
 		for urlForScrape in urlArray:
 			status = getStatus()
 			print getTime()
@@ -82,7 +87,7 @@ def main(args):
 				time.sleep(wait)
 				thread.start()
 				thread.join()
-				urlArray.pop(0)
+				#urlArray.pop(0)
 
 			if len(urlArray) == 1:
 				print "\n\n\n"
@@ -133,8 +138,14 @@ def scrape_date(soup):
 
 		# parses the pastebin time of post. pastebin time is default CDT (Central Date Time)
 		pastebinTime = dparser.parse(dateString)
+		'''
+		local_dt = local.localize(naive, is_dst=None)
+		utc_dt = local_dt.astimezone (pytz.utc)
+		utc_dt.strftime ("%Y-%m-%d %H:%M:%S")
+		'''
 		return pastebinTime
 	else:
+
 		return datetime(1993, 5, 21, 0, 0, 0, 0, None)
 
 
