@@ -1,4 +1,3 @@
-# Create your views here.
 from upload.models import Document
 from upload.forms import DocumentForm
 from django.http import HttpResponseRedirect, HttpResponse
@@ -11,6 +10,7 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 import boto
 import re
+
 location = ""
 
 @login_required
@@ -20,9 +20,6 @@ def home(request):
 		newdoc = Document(docfile = request.FILES['upload'])
 		newdoc.save()
 		location = newdoc.path()
-		# Redirect to the document list after POST
-		print "hiiiiiii"
-		
 
 		# creating S3 bucket connection
 		conn = boto.connect_s3('AKIAJDT4XSQEYXW5WE2Q', 'dHXOjTTxe9e9RrRna2nzvAa+qO5pd1FR0cDpWN39')
@@ -34,11 +31,8 @@ def home(request):
 
 		print filenameKey
 		
-		
 		k.key = filenameKey 
-		#k.set_contents_from_filename('pastebin1.png')	
 		k.set_contents_from_filename(location)
-		#print k.get_contents_to_filename("newFile.txt")
 		return HttpResponseRedirect(reverse('upload.views.home'))
 	else:
 		form = DocumentForm() # An empty, unbound form
@@ -46,7 +40,7 @@ def home(request):
 	# Load documents for the list page
 	documents = Document.objects.all()
 
-	# Redner list page with the documents and the form
+	# Rendner list page with the documents and the form
 	return render_to_response(
 		'upload/parallax.html',
 		{'documents': documents, 'form' : form},
@@ -55,6 +49,3 @@ def home(request):
 
 def logout(request):
 	return logout_then_login(request)
-
-def parallax(request):
-	return render(request, 'upload/parallax.html')

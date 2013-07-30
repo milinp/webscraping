@@ -1,59 +1,69 @@
-<html>
+<html class="no-js">
 
 	<head>
+		<meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Webscraper</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+		<link href='http://fonts.googleapis.com/css?family=Droid+Sans:700|Droid+Serif' rel='stylesheet' type='text/css'>
+ 		<link rel="stylesheet" href="/static/css/normalize.css">
+		<link rel="stylesheet" href="/static/css/main.css">
+ 		<link rel="stylesheet" href="/static/custom/css/parallax.css">
+		<script src="/static/js/modernizr-2.6.2.min.js"></script>
 
 		<link href='http://fonts.googleapis.com/css?family=Droid+Sans:700|Droid+Serif' rel='stylesheet' type='text/css'>
-<!-- 		<link rel="stylesheet" href="css/gumby.css">
- -->		
-		<link href="/static/custom/css/parallax.css" rel="stylesheet"> 
 	</head>
 
 	<body>
 
 		<div id="banner">
 			<div id="bannertext">
-				<h2>Welcome to "Webscraper" </h2>
-				<h5>Import your watchlist</h5>
+				<h3>Welcome to Watchman</h3>
 			</div>
+		</div> <!-- end banner -->
 
-		</div>
+		<div id="content-container">
 
-		<div id="content">
-			<h2>Upload</h2>
-			<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin pellentesque, est ut venenatis aliquam, lorem quam porttitor ligula, eget ultrices velit dui sed quam. Praesent vehicula placerat lectus. Nulla pede. Quisque a nulla quis massa pulvinar sagittis. Pellentesque neque massa, mattis vulputate, pellentesque nec, vehicula volutpat, purus. Proin pretium dui et nulla cursus eleifend. Aenean aliquam urna eget urna. Vestibulum euismod elit.</p>
-			
-	<!-- 		<div class="custom_file_upload">
-				<input type="text" class="file" name="file_info" value="browse">
-				<div class="file_upload">
-					<input type="file" id="file_upload" name="file_upload" value="Browse">
-				</div>
-			</div> -->
-			
-			<form action="{% url "home" %}" method="post" enctype="multipart/form-data">
-			{% csrf_token %}
-				<div class="custom_file_upload">
-					<input type="text" class="file" name="file_info">
+			<div id="content">
+				<h2>Watchlists</h2>
+				<hr>
+				<p><span class="bold">Upload your company watchlist</span><br>Note: Your watchlist should be in the form of a textfile with each keyword separated by a newline<br><br>Example:<br>Joe Smith<br>supersecretdatabase<br>clientDB93<br>plsdonthackme</p>
+				<p><span class="bold">The Information Security Manager of your company will be notified via e-mail if a possible information leak is discovered.</span></p>
+				<hr>
+				<br>
+				
+				<form action="{% url "home" %}" method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+					<div class="custom_file_upload">
 					<div class="file_upload">
-						<input type="file" name="upload"/>
+							<input type="file" name="upload"/>
+						</div>
 					</div>
-				</div>
-				<input id="button" class="btn btn-primary" type="submit" name="import" value="Submit" />
-			</form>
+					<br>
+					<input id="button" class="btn btn-primary" type="submit" name="import" value="Submit" />
+				</form>
+			</div> <!-- end content -->
 
-<!-- 			 <form method="post" enctype="multipart/form-data" action="">
-				<label for="text">Click to upload picture</label>
-				<input type="file" id="text">
-				<span id="filename"></span>
-			</form> -->
-			<div id="footer">
-				<a href="/logout/">Log Out</a>
+			<div id="content-logo">
+				<div id="bannertext-logo">
+					<h3>Upload your watchlists</h3>
+				</div>
 			</div>
 
-		</div>
-		
-		<script src="js/libs/modernizr-2.6.2.min.js"></script>
-		<script src="/static/js/jquery-2.0.3.min.js"></script>
-        <script src="/static/custom/javascript/parallax.js"></script>
+			<div id = "content-footer">
+				<div id="content-footer-inner">
+					<a href="/logout/">Logout</a>
+				</div>
+			</div> <!-- end container-footer -->
+
+		</div> <!-- end content-container -->
+
+		<script src="/static/js/jquery-ui-1.10.3.custom.js"></script>
+		<script src="/static/js/jquery-2.0.3.js"></script>
+		<script src="/static/custom/javascript/parallax.js"></script>
+		<script src="/static/js/plugins.js"></script>
+		<script src="/static/js/main.js"></script>
 	</body>
 
 </html>
