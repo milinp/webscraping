@@ -48,10 +48,9 @@ a:hover{
 
 }
 
-
 #bannertext { 
   width: 20em; 
-  position: absolute; 
+  position: fixed; 
   top: 40%; 
   left: 54%; 
   border: .25em solid #fff;

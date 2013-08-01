@@ -8,7 +8,7 @@ function EasyPeasyParallax() {
     });
     $('#bannertext').css({
         'margin-top': (scrollPos/4)+"px",
-        'opacity': 1-(scrollPos/250),
+        'opacity': 1-(scrollPos/100),
     });
     $('#bannertext-logo').css({
         'margin-left': (scrollPos/37.5)+"em",

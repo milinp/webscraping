@@ -1,39 +1,39 @@
-import httplib2
 import urllib2
 import urlparse
 import sys
-import traceback
-import pdb
 import unicodedata
 import cookielib
 import time
 import threading
 import re
-import os, signal, subprocess
-from bs4 import BeautifulSoup, SoupStrainer
-from datetime import datetime
-from django.utils.timezone import utc
-import dateutil.parser as dparser 
-import pytz
-from pytz import timezone
-from django.core.management.base import BaseCommand, CommandError
-from django.core.management.base import make_option
-from scraper.models import DummyVisited, PastebinEntries
+import os
+import signal
+import subprocess
 import pytz
 import warnings
+import dateutil.parser as dparser 
+from bs4 import BeautifulSoup
+from bs4 import SoupStrainer
+from datetime import datetime
+from pytz import timezone
+from django.utils.timezone import utc
+from django.core.management.base import BaseCommand
+from django.core.management.base import CommandError
+from django.core.management.base import make_option
+from scraper.models import DummyVisited
+from scraper.models import PastebinEntries
+
 warnings.filterwarnings(
         'ignore', r"DateTimeField received a naive datetime",
         RuntimeWarning, r'django\.db\.models\.fields')
+
 url = ""
 wait = 0
-url_key = "fafa"
+url_key = ""
 jar = cookielib.FileCookieJar("cookies")
-urls = []
-visited = {url : "1"}
 isStop = False
 urlArray = []
 start_time = 0
-#dummy = "http://pastebin.com/ucDWguUf"
 
 class Command(BaseCommand):
 	def handle(self, *args, **options):
@@ -44,30 +44,44 @@ class Command(BaseCommand):
 			main(args)
 
 class myThread (threading.Thread):
-    def __init__(self, threadID, name, counter, urlForScrape):
+    def __init__(self, threadID, name, counter, urlForScrape, url_key):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
         self.counter = counter
         self.urlForScrape = urlForScrape
+        self.url_key = url_key
     def run(self):
-        startScrapper(self.urlForScrape)
+    	if self.url_key == "pastebin.com":
+        	startScraperPastebin(self.urlForScrape)
+        if self.url_key == "pastie.org":
+        	startScraperPastie(self.urlForScrape)
 
 def main(args):
-	global isStop
-	isStop = False
+
 	global urlArray
 	global url
-	url = args[0]
-	urls.append(url)
+	global isStop
 	global url_key
-	url_key = urlparse.urlsplit(urls[0]).netloc
+	isStop = False
+	i = 0
+	url = args[0]
+	url_key = urlparse.urlsplit(url).netloc
 	wait = float(args[1])
+
 	try:
-		urlArray = []
-		soup = openURL("http://pastebin.com/archive")
-		addLinks(soup)
-		i = 0
+		urlArray = []		
+		soup = openURL(url)
+		
+		if url_key == "pastie.org":
+			addLinksPastie(soup)
+			for i in range(0,3):
+				soup = openURL(getPastieNextPage(soup))
+				addLinksPastie(soup)
+
+		if url_key == "pastebin.com":
+			addLinksPastebin(soup)
+
 		print "\n\n\n---------------------------------------Restarting----------------------------------------------------------------------------\n\n"
 		print "Length of urlArray = %d\n\n\n" % (len(urlArray))
 		
@@ -83,111 +97,126 @@ def main(args):
 			else: 
 				i = i + 1
 				threadName = "Thread number %d" % (i)
-				thread = myThread(1, threadName, i, urlForScrape)
+				thread = myThread(1, threadName, i, urlForScrape, url_key)
 				time.sleep(wait)
 				thread.start()
 				thread.join()
 				#urlArray.pop(0)
 
-			if len(urlArray) == 1:
-				print "\n\n\n"
-				print urlArray
-				print "\n\n\n"
-				addLinks(soup)
-		
 	except Exception as ex:
 		print "Exception in user code: " + str(ex)
-		print "URL: " + urls[0]  
 
-def getStatus()	:
-	return isStop
-
-def startScrapper(urlForScrape):
+# invoked a thread to begin scraping a Pastebin page for information (specifically its date and contents)
+# stores into database
+def startScraperPastebin(urlForScrape):
 	start_time = time.time()
 	urlSoup = ""
 	if not DummyVisited.objects.filter(url = urlForScrape).exists():
 		print "new entry = %s\n\n" % (urlForScrape)
 		urlSoup = openURL(urlForScrape)
-		parsedText = scrape(urlSoup)
-		modifiedTime = scrape_date(urlSoup)
-		#modifiedTime = datetime.utcnow().replace(tzinfo = utc).strftime('%Y-%m-%d %H:%M:%S')
-		#print "modifiedTime Time"
-		#print parsedText
+		parsedText = scrapePastebin(urlSoup)
+		modifiedTime = scrapeDatePastebin(urlSoup)
 		DummyVisited(url = urlForScrape, urlData = parsedText, modifiedTime = modifiedTime).save()
-		
+	else:
+		print "Repeated entry = %s\n\n" % (urlForScrape)
+
+# invoked a thread to begin scraping a Pastie page for information (specifically its date and contents)
+# stores into database
+def startScraperPastie(urlForScrape):
+	start_time = time.time()
+	urlSoup = ""
+	if not DummyVisited.objects.filter(url = urlForScrape).exists():
+		print "new entry = %s\n\n" % (urlForScrape)
+		urlSoup = openURL(urlForScrape)
+		parsedText = scrapePastie(urlSoup)
+		modifiedTime = scrapeDatePastie(urlSoup)
+		DummyVisited(url = urlForScrape, urlData = parsedText, modifiedTime = modifiedTime).save()
 	else:
 		print "Repeated entry  = %s" % (urlForScrape)
 
-def scrape(soup):
+# syntaxy stuff to open the url with Cookies enabled
+# takes in url (ex: http://bananaman.com)
+# returns a BeautifulSoup object
+def openURL(url):
+	#time.sleep(wait)
+	opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(jar))
+	htmltext = BeautifulSoup(opener.open(url))
+	return htmltext
+
+# extract payload from Pastie site
+# returns a string
+def scrapePastie(soup):
+	textBody = ""
+	s = soup.find("pre", attrs={"class" : "textmate-source"})
+	for f in s.findAll(text= True):
+		textBody += f.encode("ascii", "ignore")
+	return textBody
+
+# extract payload from Pastebin site
+# returns string
+def scrapePastebin(soup):
 	textBody = ""
 	# check to see if div exists. It should because it's specific to pastebin.
-	if soup.findAll("textarea", attrs = {"id" : "paste_code"}):
-		for s in soup.find("textarea", attrs = {"id" : "paste_code"}):
-			textBody = s.encode("ascii","ignore")
-		return textBody
-	else: 
-		return "This is not the text you are looking for."
+	s = soup.find("textarea", attrs = {"id" : "paste_code"})
+	textBody = s.text.encode("ascii", "ignore")
+	return textBody
 
-# returns date of pastebin post as a datetime object
-def scrape_date(soup):
+# NEEDS WORK 
+def scrapeDatePastie(soup):
+	s = htmltext.findAll(title = True)
+	if s:
+		for time in s:
+			time['title']
+		return None
+	else:
+		return datetime(1993, 5, 21, 0, 0, 0, 0, None)
+
+# extracts date of pastebin post
+# returns a datetime object
+def scrapeDatePastebin(soup):
 	# check to see if div exists. It should because it's specific to pastebin.
 	if soup.findAll("div", attrs = {"class" : "paste_box_info"}):
 		# filter out the title attribute which holds the date
 		for s in soup.findAll("span", title = True, style = True, text = True):
 			dateString = s['title']
-
 		# parses the pastebin time of post. pastebin time is default CDT (Central Date Time)
 		pastebinTime = dparser.parse(dateString)
-		'''
-		local_dt = local.localize(naive, is_dst=None)
-		utc_dt = local_dt.astimezone (pytz.utc)
-		utc_dt.strftime ("%Y-%m-%d %H:%M:%S")
-		'''
 		return pastebinTime
 	else:
-
 		return datetime(1993, 5, 21, 0, 0, 0, 0, None)
 
+# extracts all links on the archive/browse page of Pastie and stores into urlArray
+def addLinksPastie(soup):
+	s = soup.findAll("div", attrs={"class" : "pastePreview"})
+	for section in s:
+		linkTag = section.find("a")
+		link = linkTag['href']
+		urlArray.append(link)
 
-def openURL(aURL):
-	#time.sleep(wait)
-	opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(jar))
-	htmltext = BeautifulSoup(opener.open(aURL))
-	return htmltext
-
-def addLinks(soup):
+# extracts all links on the archive/browse page of Pastebin and stores into urlArray
+def addLinksPastebin(soup):
 	maintable = soup.find("table", attrs = {"class" : "maintable"})
 	if maintable:
 		for a in maintable.findAll("a"):
 			if "archive" not in a['href']:
 		 		a['href'] = urlparse.urljoin("http://pastebin.com/", a['href'])
 				urlArray.append(a['href'])
-	'''
-	for tag in soup.findAll("a", href = True):
-		 	tag['href'] = urlparse.urljoin(url, tag['href'])
-		 	tag['href'].encode("utf-8")
-		 	#check to make sure crawler stays within page domain
-		 	#also make sure crawler does not put an already visited page into the queue
-		 	# if tag['href'].find(url_key) != -1 and not visited.has_key(tag['href'].encode("utf-8")):
-		 	# 	urlArray.append(tag['href'].encode("utf-8"))
-		 	# 	visited[tag['href'].encode("utf-8")] = "1"
-		 	if tag['href'].find(url_key) != -1:
-		 		urlArray.append(tag['href'].encode("utf-8"))
-		 		#visited[tag['href'].encode("utf-8")] = "1"
-	return urls	 
-	'''
 
+# extracts link to next page of Pastie archive (ex: http://pastie.org/pastes/y/2013/8/page/2)
+# returns string
+def getPastieNextPage(soup):
+	tag = soup.find(text = "Next page").parent['href']
+	nextPage = urlparse.urljoin("http://pastie.org/", tag)
+	return nextPage
 
-	
-
+# sets flags to stop scraping function
+# invoked when Stop is pressed from Admin User Interface
 def stopScraping():
 	global isStop
 	global urlArray
-	print "STOP STOP STOP !!!"
 	print len(urlArray)
 	#urlArray = []
 	isStop = True
-
 
 def startTimer():
 	global start_time
@@ -195,3 +224,7 @@ def startTimer():
 
 def getTime():
 	return time.time() - start_time
+
+# check flag used for stopping
+def getStatus()	:
+	return isStop
