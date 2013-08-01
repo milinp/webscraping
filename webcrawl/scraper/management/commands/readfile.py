@@ -63,118 +63,85 @@ class Screenshot(QWebView):
     def _loadFinished(self, result):
         self._loaded = True
 
-
-  
-def takeScreenShots(url, urlname):
-
-  name = urlname + '.png'
-  #urlname = matches[0] + '.png'
-  s = Screenshot()
-  s.capture(url, name)
-
-  # s.capture('http://pastebin.com', 'pastebin1.png') 
-  # s.capture('http://pastebin.com/GGfXmcNa', 'pastebin2.png')
-  # s.capture('http://pastebin .com/NSbZquFk', 'pastebin3.png')
-  # s.capture('http://pastebin.com/4gpMEax3', 'pastebin4.png')
-  # s.capture('http://pastebin.com/htiwBie8', 'pastebin5.png')
-  # s.capture('http://pastebin.com/archive', 'pastebin6.png')
-
-def checkWatchListDB(aWatchWord):
-    # for remainingUrl in urlArray:
-  if not ModifiedWatchListDB.objects.filter(matchedWord = aWatchWord).exists():
-    return "00:00:00"
-  else:
-    dummydata = ModifiedWatchListDB.objects.get(matchedWord = aWatchWord)
-    #print "checking database time"
-    #print dummydata.modifiedTime.strftime('%Y-%m-%d %H:%M:%S')
-    return dummydata.modifiedTime.strftime('%Y-%m-%d %H:%M:%S')
-
-    '''
-    datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
-'Saturday, 15. December 2012 11:19AM'
-'''
-
-
-#ef upDateWatchListDb(aWatchWord):
- 
-
-
-def insertIntoWatchList(aWatchWord):
-  #print datetime.datetime.now()
-  modifiedTime = datetime.datetime.utcnow().replace(tzinfo = utc)
-  #print modifiedTime 
-  if ModifiedWatchListDB.objects.filter(matchedWord = aWatchWord).exists():
-    dummydata = ModifiedWatchListDB.objects.get(matchedWord = aWatchWord)
-    #print dummydata
-    dummydata.modifiedTime = modifiedTime
-    dummydata.save()
-    #print "updating into the databse\n"
-  else:
-    #print "inserting into the databse\n"
-    ModifiedWatchListDB(matchedWord = aWatchWord, modifiedTime = modifiedTime).save()
-
+def main(args):
+  print "\t\t\t scheduling matching patterns start  \n\n\n"
+  #s3.get_bucket('media.yourdomain.com').get_key('examples/first_file.csv')
+    #conn = S3Connection 
+  conn = boto.connect_s3('AKIAIJZ56E33VC2GBG3Q', 'xfSWxuK9uGAsRwtwdJgIPBhiye0Z3ka5oRqRa8FD')
+  bucket = conn.get_bucket('client1.bucket')
+  for key in bucket.list():
+    filename = key.name.encode('utf-8')
+    print "File name is : "
+    print filename
+    key.get_contents_to_filename((dirname(__file__) +'\\'+ filename))
+    watchListFile =  dirname(__file__) +'\\'+filename
+    print "Printing watchlist"
+    scanDatabaseForMatchList(watchListFile,filename)  
 
 def sendMail(filePath, fileName,matchingword,latestUrl,latestUrlData):
+  msg = MIMEMultipart()
+  msg['Subject'] = 'Dow Jones Cyber Security Risk Notification'
+  msg['From'] = 'astroprasad@gmail.com'
+  addresses = ['pranav16@gmail.com','pranavkumar.patel@dowjones.com','astroprasad@gmail.com']
+
+  # what a recipient sees if they don't use an email reader
+  msg.preamble = 'Multipart message.\n'
+  part = MIMEText('**** Notification of keyword match ****\n\n This email serves as notification of possible security breach or potential targeting for a future incident.' 
+    'The named data dump site is commonly used to share stolen data or information related to security breaches. Data related to your organization has been detected on this site.\n\n\n'
+     'KEYWORD: %s' % matchingword + '\n\nData Dump URL:  %s' % latestUrl + '\n\nContent\n %s' % latestUrlData + '\n\n')
+  msg.attach(part)
+  part = MIMEApplication(open(filePath, 'rb').read())
+  part.add_header('Content-Disposition', 'attachment', filename=fileName)
+  msg.attach(part)
+   
+  # connect to SES
   try:
-
-    msg = MIMEMultipart()
-    msg['Subject'] = 'Dow Jones Cyber Security Risk Notification'
-    msg['From'] = 'pranavkumar.patel@dowjones.com'
-    msg['To'] = 'pranav16@gmail.com'
-     
-    # what a recipient sees if they don't use an email reader
-    msg.preamble = 'Multipart message.\n'
-
-     
-
-    part = MIMEText('**** Notification of keyword match ****\n\n This email serves as notification of possible security breach or potential targeting for a future incident.' 
-      'The named data dump site is commonly used to share stolen data or information related to security breaches. Data related to your organization has been detected on this site. \n\nFor Historical data Please Find the Attachment\n\n\n'
-       'KEYWORD: %s' % matchingword + '\n\nData Dump URL:  %s' % latestUrl + '\n\nContent\n %s' % latestUrlData + '\n\n')
-    print part
-    msg.attach(part)
-    part = MIMEApplication(open(filePath, 'rb').read())
-    part.add_header('Content-Disposition', 'attachment', filename=fileName)
-    msg.attach(part)
-  
     connection =  boto.ses.connect_to_region('us-east-1',aws_access_key_id='AKIAIJZ56E33VC2GBG3Q', aws_secret_access_key='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')
-    print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1"
-    print connection
-    print msg.as_string()
-    print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1"
+   
   # and send the message
-    result = connection.send_raw_email(msg.as_string(), source=msg['From'], destinations=[msg['To']])
+    result = connection.send_raw_email(msg.as_string()
+    , source=msg['From']
+    , destinations=addresses)
     print result
   except Exception as ex:
     print "Exception in user code: " + str(ex)
 
+def takeScreenShots(url, urlname):  
+  s = Screenshot()
+  s.capture(url, urlname)
+
+def checkWatchListDB(aWatchWord):
+  if not ModifiedWatchListDB.objects.filter(matchedWord = aWatchWord).exists():
+    return "00:00:00"
+  else:
+    dummydata = ModifiedWatchListDB.objects.get(matchedWord = aWatchWord)  
+    return dummydata.modifiedTime.strftime('%Y-%m-%d %H:%M:%S')
+ 
+def insertIntoWatchList(aWatchWord):
+  modifiedTime = datetime.datetime.utcnow().replace(tzinfo = utc)
+  if ModifiedWatchListDB.objects.filter(matchedWord = aWatchWord).exists():
+    dummydata = ModifiedWatchListDB.objects.get(matchedWord = aWatchWord)
+    dummydata.modifiedTime = modifiedTime
+    dummydata.save()
+  else:
+    ModifiedWatchListDB(matchedWord = aWatchWord, modifiedTime = modifiedTime).save()
 
 
 def scanDatabaseForMatchList(watchListFile, aFileName):
   print "inside Scan database"
   listOfFiles = []
-  
-  #print watchListFile
   with open(watchListFile) as f:
       watchlist = f.readlines()
-      #print "saasdasdaasfsdfsdfsfafasdfasdfasdfsdffasf \n\n"
-      #print watchlist
-      print "\n\n\nChecking with the database......"
-
   db = MySQLdb.connect(host="interns-web.cwlx8eld8gjz.us-east-1.rds.amazonaws.com",user="interns",passwd="Dowjones1",db="url_info" )
-
   cursor = db.cursor()
-
+  fileSize = 0
+  filePathName = ''
+  i = 0
+  f = open(os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s_%d' % (aFileName, i) +'.txt', 'w')
   for match in watchlist:
     try:
-      i = 0
-      f = open(os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s_%d' % (aFileName, i) +'.txt', 'w')
-      f.close()
       time = str(checkWatchListDB(match))
-      #print time
-      #print datetime.datetime.now()
       newModifiedTime = datetime.datetime.utcnow().replace(tzinfo = utc).strftime('%Y-%m-%d %H:%M:%S')
-      #print newModifiedTime 
-      #Select * From scraper_dummyvisited where modifiedTime Between '2013-07-16' AND '2013-07-17';
       matchingword = match.rstrip()
       #sql = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%';"  % (matchingword)
       sql = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%' AND modifiedTime Between '%s' AND '%s';"  % (matchingword, time, newModifiedTime  )
@@ -185,101 +152,36 @@ def scanDatabaseForMatchList(watchListFile, aFileName):
       
       results = cursor.fetchall()
       for row in results:
-        #print "inside for loop"
-        filePathName=""
         fileName = "%s_%d.txt" %(aFileName, i)
         filePathName =  os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s_%d' % (aFileName, i) +'.txt' 
-        #print filePathName
         urlname = '%s-%d.png' % (matchingword , i)
-        #print row
-
         matches=re.findall(r'\'(.+?)\'',str(row))
-       # print "this is the url  %s" % matches[0]
+        # print "this is the url  %s" % matches[0]
         #takeScreenShots(matches[0], urlname)
         directoryName = os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s' % (aFileName) +'.txt'
-
-        #print directoryName
-              #print results
         tempFileSize = os.path.getsize(filePathName)  
         fileSize = float(tempFileSize)
-        #print "Size of the file"
-        #print fileSize 
         if fileSize < 20000000:
           f = open(filePathName, 'a')
-          #print "inside the if condition"
-          #print fileSize
           f.write("\n\n\n-------------------------------------------------------------------------------------------------------\n\n")
           f.write("KEYWORD: " + matchingword + "\n\n\n") 
-          #print ("Data Dump URL:  " + str(row[1]) + "\n\n\n")
           f.write("Data Dump URL:  " + str(row[0]) + "\n\n\n")
           f.write("Content:  \n\n")
           f.write(str(row[1]) + "\n\n")
           f.write("-------------------------------------------------------------------------------------------------------\n")
           f.close()
+          notificationWatchword = matchingword
+          insertIntoWatchList(match)
         else:
           listOfFiles.add(fileName);
           i = i + 1
-
-        #print "########################"
         latestUrl = results[-1][0]
         latestUrlData = results[-1][1]
-        #print str(latestUrl)
-        #print str(results[-1][0])
-        #print str(latestUrlData)
-        #print str(results[-1][1])
-        #print "########################"
-      #print results
-      #insertIntoWatchList(match)
-
-
-      # print "*************************"
-      # print matchingword
-      # print "*************************"
-      # print str(latestUrl)
-      # print "*************************"
-      # print str(latestUrlData)
-      # print "*************************"
-        
-        
-        
-
       print "Printing the list of files \n\n\n\n"
       print listOfFiles;
-      #print fileName
-      #print filePathName
-      sendMail(filePathName,fileName,matchingword,latestUrl,latestUrlData)
-      insertIntoWatchList(match)   
     except Exception as ex:
-      print "Exception in user code: " + str(ex)   
+      print "Exception in user code: " + str(ex)
+  if not filePathName == '':
+    sendMail(filePathName,fileName,notificationWatchword,latestUrl,latestUrlData)
   f.close()
   db.close()
-
-
-
-def main(args):
-  newModifiedTime123 = datetime.datetime.now().replace(tzinfo = utc).strftime('%Y-%m-%d %H:%M:%S')
-  print "\n--------------------------------------------------------------------------------------------------------------------\n"
-  print newModifiedTime123
-
-  print "\t\t\t scheduling matching patterns start  \n\n\n"
-  #s3.get_bucket('media.yourdomain.com').get_key('examples/first_file.csv')
-    #conn = S3Connection 
-  conn = boto.connect_s3('AKIAJDT4XSQEYXW5WE2Q', 'dHXOjTTxe9e9RrRna2nzvAa+qO5pd1FR0cDpWN39')
-  bucket = conn.get_bucket('client1.bucket')
-  for key in bucket.list():
-    filename = key.name.encode('utf-8')
-    print "File name is : "
-    print filename
-    key.get_contents_to_filename((dirname(__file__) +'\\'+ filename))
-    watchListFile =  dirname(__file__) +'\\'+filename
-    print "Printing watchlist"
-    #print watchListFile
-    scanDatabaseForMatchList(watchListFile,filename)  
-'''
-  k = Key(bucket)
-  k.key = 'Fortune500ListCompanies1'
-#k.set_contents_from_filename('pastebin1.png')  
-  k.get_contents_to_filename((dirname(__file__) + '\\Fortune500ListCompanies1.txt'))
-  print dirname(__file__) + '\\Fortune500ListCompanies1.txt'
-  watchListFile = dirname(__file__) + '\\Fortune500ListCompanies1.txt'
-'''
