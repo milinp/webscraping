@@ -161,18 +161,24 @@ def scrapePastebin(soup):
 	textBody = s.text.encode("ascii", "ignore")
 	return textBody
 
-# NEEDS WORK 
+# extracts date of pastie post
+# returns a datetime object (timezone = US/Eastern)
 def scrapeDatePastie(soup):
 	s = htmltext.findAll(title = True)
 	if s:
 		for time in s:
-			time['title']
-		return None
+			dateString = time['title']
+		pastieTime = dparser.parse(dateString,ignoretz= True)
+		tz = pytz.timezone('GMT')	
+		pastieTZ = tz.localize(pastieTime)
+		pastieEST = pastieTZ.astimezone(pytz.timezone('US/Eastern'))
+		pastieEST.strftime("%Y-%m-%d %H:%M:%S")
+		return pastieEST
 	else:
 		return datetime(1993, 5, 21, 0, 0, 0, 0, None)
 
 # extracts date of pastebin post
-# returns a datetime object
+# returns a datetime object (timezone = US/Eastern)
 def scrapeDatePastebin(soup):
 	# check to see if div exists. It should because it's specific to pastebin.
 	if soup.findAll("div", attrs = {"class" : "paste_box_info"}):
@@ -181,7 +187,11 @@ def scrapeDatePastebin(soup):
 			dateString = s['title']
 		# parses the pastebin time of post. pastebin time is default CDT (Central Date Time)
 		pastebinTime = dparser.parse(dateString)
-		return pastebinTime
+		tz = pytz.timezone('CST6CDT')
+		pastebinTZ = tz.localize(pastebinTime)
+		pastebinEST = pastebinTZ.astimezone(pytz.timezone('US/Eastern'))
+		pastebinEST.strftime("%Y-%m-%d %H:%M:%S")
+		return pastebinEST
 	else:
 		return datetime(1993, 5, 21, 0, 0, 0, 0, None)
 
