@@ -25,14 +25,6 @@ class DummyVisited(models.Model):
 	def __unicode__(self):
 		return "URL: %s" % self.url
 
-class PastebinEntries(models.Model):
-	url = models.CharField(primary_key = True, max_length = 255)
-	urlData = models.TextField()
-	modifiedTime = models.DateTimeField()
-	def __unicode__(self):
-		return "URL: %s" % self.url
-
-
 class Document(models.Model):
 	docfile = models.FileField(upload_to='Watchlists')
 	def __unicode__(self):
@@ -51,11 +43,22 @@ class IndexedTable(models.Model):
 	def __unicode__(self):
 		return "URL: %s" % self.url
 
-		
-
-class WatchListDB(models.Model):
-	matchedWord = models.TextField()
-	modifiedTime = models.DateTimeField(auto_now = True)
 class ModifiedWatchListDB(models.Model):
 	matchedWord = models.TextField()
 	modifiedTime = models.DateTimeField()
+
+		
+#creates model for table scraper_pastiedatabase
+
+class PastieEntries(models.Model):
+	url = models.CharField(primary_key = True, max_length = 255)
+	urlData = models.TextField()
+	modifiedTime = models.DateTimeField(auto_now = False)
+	def __unicode__(self):
+		return "URL: %s" % self.url
+
+
+class PastieWatchListDB(models.Model):
+	matchedWord = models.TextField()
+	modifiedTime = models.DateTimeField()		
+

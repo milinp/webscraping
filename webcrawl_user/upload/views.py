@@ -22,7 +22,7 @@ def home(request):
 		location = newdoc.path()
 
 		# creating S3 bucket connection
-		conn = boto.connect_s3('AKIAJDT4XSQEYXW5WE2Q', 'dHXOjTTxe9e9RrRna2nzvAa+qO5pd1FR0cDpWN39')
+		conn = boto.connect_s3('AKIAIJZ56E33VC2GBG3Q', 'xfSWxuK9uGAsRwtwdJgIPBhiye0Z3ka5oRqRa8FD')
 		bucket = conn.create_bucket('client1.bucket')
 		k = Key(bucket)
 
