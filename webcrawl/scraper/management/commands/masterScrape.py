@@ -74,11 +74,11 @@ def main(args):
 		soup = openURL(url)
 		
 		if url_key == "pastie.org":
-			addLinksPastie(soup)
-			for i in range(0,3):
-				soup = openURL(getPastieNextPage(soup))
-				addLinksPastie(soup)
-
+			#addLinksPastie(soup)
+			getHistoricalDataPastie(soup)
+			# for i in range(0,8):
+			# 	soup = openURL(getPastieNextPage(soup))
+			# 	addLinksPastie(soup)
 		if url_key == "pastebin.com":
 			addLinksPastebin(soup)
 
@@ -91,9 +91,10 @@ def main(args):
   				
 		for urlForScrape in urlArray:
 			status = getStatus()
-			print getTime()
+			#print getTime()
 			if status or getTime() > float(args[2]) - 2:
-				print("We killed it")
+				#print("We killed it")
+				print ""
 			else: 
 				i = i + 1
 				threadName = "Thread number %d" % (i)
@@ -118,7 +119,7 @@ def startScraperPastebin(urlForScrape):
 		modifiedTime = scrapeDatePastebin(urlSoup)
 		DummyVisited(url = urlForScrape, urlData = parsedText, modifiedTime = modifiedTime).save()
 	else:
-		print "Repeated entry = %s\n\n" % (urlForScrape)
+		print "Repeated entry = %s\n" % (urlForScrape)
 
 # invoked a thread to begin scraping a Pastie page for information (specifically its date and contents)
 # stores into database
@@ -130,9 +131,10 @@ def startScraperPastie(urlForScrape):
 		urlSoup = openURL(urlForScrape)
 		parsedText = scrapePastie(urlSoup)
 		modifiedTime = scrapeDatePastie(urlSoup)
-		PastieEntries(url = urlForScrape, urlData = parsedText, modifiedTime = modifiedTime).save()
+		if parsedText:
+			PastieEntries(url = urlForScrape, urlData = parsedText, modifiedTime = modifiedTime).save()
 	else:
-		print "Repeated entry  = %s" % (urlForScrape)
+		print "Repeated entry  = %s\n" % (urlForScrape)
 
 # syntaxy stuff to open the url with Cookies enabled
 # takes in url (ex: http://bananaman.com)
@@ -147,10 +149,11 @@ def openURL(url):
 # returns a string
 def scrapePastie(soup):
 	textBody = ""
-	s = soup.find("pre", attrs={"class" : "textmate-source"})
-	for f in s.findAll(text= True):
-		textBody += f.encode("ascii", "ignore")
-	return textBody
+	if soup.find("pre", attrs={"class" : "textmate-source"}):
+		s = soup.find("pre", attrs={"class" : "textmate-source"})
+		for f in s.findAll(text= True):
+			textBody += f.encode("ascii", "ignore")
+		return textBody
 
 # extract payload from Pastebin site
 # returns string
@@ -215,9 +218,33 @@ def addLinksPastebin(soup):
 # extracts link to next page of Pastie archive (ex: http://pastie.org/pastes/y/2013/8/page/2)
 # returns string
 def getPastieNextPage(soup):
-	tag = soup.find(text = "Next page").parent['href']
-	nextPage = urlparse.urljoin("http://pastie.org/", tag)
-	return nextPage
+	if soup.find(text = "Next page").parent['href']:
+		tag = soup.find(text = "Next page").parent['href']
+		nextPage = urlparse.urljoin("http://pastie.org/", tag)
+		return nextPage
+
+# extracts all the historical data
+def getHistoricalDataPastie(soup):
+	print soup
+	monthsURLSoup = soup.findAll("div", attrs={"class" : "months"})
+	for eachMonth in monthsURLSoup:
+		linkTag = eachMonth.find("a")
+		print linkTag['']
+		link = urlparse.urljoin("http://pastie.org/", linkTag['href'])
+		getPastieNextPageRecursively(link)
+
+def getPastieNextPageRecursively(nextURL):
+	nextURLSoup = openURL(nextURL)
+	if soup.find(text = "Next page").parent['href']:
+		tag = soup.find(text = "Next page").parent['href']
+		nextPage = urlparse.urljoin("http://pastie.org/", tag)
+		print "\n~~~~~~~~~ printing next Page ~~~~~~~~~~\n"
+		print nextPage
+		urlArray.append(nextURL)
+		getPastieNextPageRecursively(nextPage)
+	else:
+		return
+
 
 # sets flags to stop scraping function
 # invoked when Stop is pressed from Admin User Interface

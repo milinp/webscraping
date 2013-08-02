@@ -50,48 +50,7 @@ def home(request):
 		call_command('masterScrape', *args)
 		sched.shutdown(wait = False)
 
-	return render(request, 'scraper/scraper.html')
-
-# def results(request):
-
-# 	# if pastebin button is pressed, invoke masterScrape to scrape pastebin archive
-# 	# scheduler interval of 3 minutes
-# 	if 'run_scraper_pastebin' in request.POST:
-# 		logging.basicConfig()
-# 		global sched
-# 		sched = Scheduler(standalone = True)
-# 		args = ['http://pastebin.com/archive', '1', '180']
-# 		call_command('masterScrape', *args)	
-	
-# 		def scrape_sched():
-# 			call_command('masterScrape', *args)
-
-# 		sched.add_interval_job(scrape_sched, seconds = 180, max_instances = 1000)
-# 		sched.start()
-# 		return render(request, 'scraper/index.html')
-
-# 	# if pastie button is pressed, invoke masterScrape to scrape pastie archive
-# 	# scheduler interval of 10 minutes 
-# 	if 'run_scraper_pastie' in request.POST:
-# 		logging.basicConfig()
-# 		global sched
-# 		sched = Scheduler(standalone = True)
-# 		args = ['http://pastie.org/pastes', '1', '600']
-# 		call_command('masterScrape', *args)	
-	
-# 		def scrape_sched():
-# 			call_command('masterScrape', *args)
-
-# 		sched.add_interval_job(scrape_sched, seconds = 600, max_instances = 1000)
-# 		sched.start()
-# 		return render(request, 'scraper/index.html')
-
-# 	# sets flags to stop scrape function
-# 	if 'stop_scraper' in request.POST:
-# 		args = ['stop']
-# 		call_command('masterScrape', *args)
-# 		sched.shutdown(wait = False)
-# 		return render(request, 'scraper/index.html')
+	return render(request, 'scraper/index2.0.html')
 
 def watchlist(request):
 #Handle file upload
@@ -122,7 +81,7 @@ def watchlist(request):
 
 	# Render list page with the documents and the form
 	return render_to_response(
-		'scraper/watchlist.html',
+		'scraper/index2.0.html',
 		{'documents': documents, 'form' : form},
 		context_instance = RequestContext(request)
 	)

@@ -117,12 +117,17 @@ def scanDatabaseForMatchList(watchListFile, aFileName):
       matchingword = match.rstrip()
 
       #sql statement to check a match for the particular matching word between the previous stored time and the current time
-      sql = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%' AND modifiedTime Between '%s' AND '%s';"  % (matchingword, time, newModifiedTime  )
-      print sql
+      sqlPastebin = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%' AND modifiedTime Between '%s' AND '%s';"  % (matchingword, time, newModifiedTime  )
+      print sqlPastebin
       keyword = matchingword
-      cursor.execute(sql)
+      cursor.execute(sqlPastebin)
       
       results = cursor.fetchall()
+
+      sqlPastie = "SELECT * FROM scraper_pastieentries WHERE urlData LIKE '%%%s%%' AND modifiedTime Between '%s' AND '%s';"  % (matchingword, time, newModifiedTime  )
+      print sqlPastebin
+      cursor.execute(sqlPastie)
+      results = results + cursor.fetchall()
       for row in results:
         # getting the filename and file path name
         fileName = "%s_%d.txt" %(aFileName, i)
@@ -170,7 +175,7 @@ def sendMail(filePath, fileName,matchingword,latestUrl,latestUrlData):
   msg = MIMEMultipart()
   msg['Subject'] = 'Dow Jones Cyber Security Risk Notification'
   msg['From'] = 'astroprasad@gmail.com'
-  addresses = ['pranav16@gmail.com','pranavkumar.patel@dowjones.com','astroprasad@gmail.com']
+  addresses = ['pranav16@gmail.com','pranavkumar.patel@dowjones.com','astroprasad@gmail.com', 'justineaitel@gmail.com']
 
   # what a recipient sees if they don't use an email reader
   msg.preamble = 'Multipart message.\n'
