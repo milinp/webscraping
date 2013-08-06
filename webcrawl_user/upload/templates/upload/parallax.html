@@ -19,20 +19,21 @@
 
 		<div id="banner">
 			<div id="bannertext">
-				<h3>Welcome to Watchman</h3>
+				<h3>- Welcome -</h3>
+				<h4>DJ Breach Target Notification Service </h4>
 			</div>
 		</div> <!-- end banner -->
 
 		<div id="content-container">
 
 			<div id="content">
-				<h2>Watchlists</h2>
+				<br>
+				<h2>Breach Target Notification</h2>
 				<hr>
 				<p><span class="bold">Note:</span><br>Your watchlist should be formatted with each keyword separated by a newline.<br><br>Example:<br>Joe Smith<br>supersecretdatabase<br>clientDB93<br>plsdonthackme</p>
 				<!-- <p><span class="bold">The Information Security Manager of your company will be notified via e-mail if a possible information leak is discovered.</span></p> -->
 				<hr>
-				<br>
-				
+				<h3>Watchlists</h3>
 				<form action="{% url "home" %}" method="post" enctype="multipart/form-data">
 				{% csrf_token %}
 					<div class="custom_file_upload">
@@ -44,7 +45,7 @@
 					<input id="button" class="btn btn-primary" type="submit" name="import" value="Submit" />
 				</form>
 				<hr>
-				<h2>Quick Upload</h2>
+				<h3>Quick Upload</h3>
 				<form action="{% url "home" %}" method="post" enctype="multipart/form-data">
 					{% csrf_token %}
 					{{ userInput.keyword }}
@@ -61,7 +62,7 @@
 
 			<div id = "content-footer">
 				<div id="content-footer-inner">
-					<a href="/logout/">Logout</a>
+					<img src="/static/img/djlogo.png"> 
 				</div>
 			</div> <!-- end container-footer -->
 
