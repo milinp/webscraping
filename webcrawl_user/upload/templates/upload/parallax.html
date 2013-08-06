@@ -28,8 +28,8 @@
 			<div id="content">
 				<h2>Watchlists</h2>
 				<hr>
-				<p><span class="bold">Upload your company watchlist</span><br>Note: Your watchlist should be in the form of a textfile with each keyword separated by a newline<br><br>Example:<br>Joe Smith<br>supersecretdatabase<br>clientDB93<br>plsdonthackme</p>
-				<p><span class="bold">The Information Security Manager of your company will be notified via e-mail if a possible information leak is discovered.</span></p>
+				<p><span class="bold">Note:</span><br>Your watchlist should be formatted with each keyword separated by a newline.<br><br>Example:<br>Joe Smith<br>supersecretdatabase<br>clientDB93<br>plsdonthackme</p>
+				<!-- <p><span class="bold">The Information Security Manager of your company will be notified via e-mail if a possible information leak is discovered.</span></p> -->
 				<hr>
 				<br>
 				
@@ -42,6 +42,14 @@
 					</div>
 					<br>
 					<input id="button" class="btn btn-primary" type="submit" name="import" value="Submit" />
+				</form>
+				<hr>
+				<h2>Quick Upload</h2>
+				<form action="{% url "home" %}" method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					{{ userInput.keyword }}
+
+					<p><input id="button" class="btn btn-primary" type="submit" name="user_input" value="Submit" /></p>
 				</form>
 			</div> <!-- end content -->
 
