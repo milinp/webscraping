@@ -35,13 +35,13 @@ def home(request):
 	if 'run_scraper_pastie' in request.POST:
 		logging.basicConfig()
 		sched = Scheduler(standalone = True)
-		args = ['http://pastie.org/pastes', '1', '600']
+		args = ['http://pastie.org/pastes', '0', '60']
 		call_command('masterScrape', *args)	
 	
-		def scrape_sched():
+		def scrape_sched_pastie():
 			call_command('masterScrape', *args)
 
-		sched.add_interval_job(scrape_sched, seconds = 600, max_instances = 1000)
+		sched.add_interval_job(scrape_sched_pastie, seconds = 60, max_instances = 1000)
 		sched.start()
 
 	# sets flags to stop scrape function

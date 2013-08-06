@@ -98,7 +98,8 @@ def scanDatabaseForMatchList(watchListFile, aFileName):
   with open(watchListFile) as f:
       watchlist = f.readlines()
   db = MySQLdb.connect(host="interns-web.cwlx8eld8gjz.us-east-1.rds.amazonaws.com",user="interns",passwd="Dowjones1",db="url_info" )
-  cursor = db.cursor()
+  cursorPastebin = db.cursor()
+  cursorPastie = db.cursor()
   fileSize = 0
   filePathName = ''
   i = 0
@@ -120,14 +121,15 @@ def scanDatabaseForMatchList(watchListFile, aFileName):
       sqlPastebin = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%' AND modifiedTime Between '%s' AND '%s';"  % (matchingword, time, newModifiedTime  )
       print sqlPastebin
       keyword = matchingword
-      cursor.execute(sqlPastebin)
+      cursorPastebin.execute(sqlPastebin)
       
-      results = cursor.fetchall()
+      resultsPastebin = cursorPastebin.fetchall()
 
       sqlPastie = "SELECT * FROM scraper_pastieentries WHERE urlData LIKE '%%%s%%' AND modifiedTime Between '%s' AND '%s';"  % (matchingword, time, newModifiedTime  )
-      print sqlPastebin
-      cursor.execute(sqlPastie)
-      results = results + cursor.fetchall()
+      print sqlPastie
+      cursorPastie.execute(sqlPastie)
+      resultsPastie = cursorPastie.fetchall()
+      results = resultsPastie + resultsPastebin 
       for row in results:
         # getting the filename and file path name
         fileName = "%s_%d.txt" %(aFileName, i)
@@ -159,8 +161,8 @@ def scanDatabaseForMatchList(watchListFile, aFileName):
         # this fetches the last updated URL and the content stored in the URL
         latestUrl = results[-1][0]
         latestUrlData = results[-1][1]
-      print "Printing the list of files \n\n\n\n"
-      print listOfFiles;
+      #print "Printing the list of files \n\n\n\n"
+      #print listOfFiles;
     except Exception as ex:
       print "Exception in user code: " + str(ex)
 
@@ -175,7 +177,7 @@ def sendMail(filePath, fileName,matchingword,latestUrl,latestUrlData):
   msg = MIMEMultipart()
   msg['Subject'] = 'Dow Jones Cyber Security Risk Notification'
   msg['From'] = 'astroprasad@gmail.com'
-  addresses = ['pranav16@gmail.com','pranavkumar.patel@dowjones.com','astroprasad@gmail.com', 'justineaitel@gmail.com']
+  addresses = ['pranav16@gmail.com','pranavkumar.patel@dowjones.com']
 
   # what a recipient sees if they don't use an email reader
   msg.preamble = 'Multipart message.\n'
@@ -186,7 +188,15 @@ def sendMail(filePath, fileName,matchingword,latestUrl,latestUrlData):
   part = MIMEApplication(open(filePath, 'rb').read())
   part.add_header('Content-Disposition', 'attachment', filename=fileName)
   msg.attach(part)
-   
+
+  screenshotname = takeScreenShots(latestUrl, matchingword)
+  part = MIMEApplication(open(screenshotname, 'rb').read())
+  part.add_header('Content-Disposition', 'attachment', filename=matchingword+'.png')
+  msg.attach(part)
+  try:
+    os.remove(screenshotname)
+  except OSError:
+    pass
   # connect to SES
   try:
     connection =  boto.ses.connect_to_region('us-east-1',aws_access_key_id='AKIAIJZ56E33VC2GBG3Q', aws_secret_access_key='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')
@@ -200,9 +210,19 @@ def sendMail(filePath, fileName,matchingword,latestUrl,latestUrlData):
 
 
 # captures the screenshot for the url and stores it with the urlname.png
-def takeScreenShots(url, urlname):  
-  s = Screenshot()
-  s.capture(url, urlname)
+def takeScreenShots(url, matchingword):
+  try:
+    s = Screenshot() 
+    print "\n!!!!!~~~~~~~~~~~~~`` URL  -  %s" % (url)
+
+    screenshotname = os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s.png' % (matchingword)
+    print "screenshotname name  = %s"  % (screenshotname)
+    #screenshotname = matchingword + ".png"
+
+    s.capture(url, screenshotname)
+    return screenshotname
+  except Exception as ex:
+    print "Screenshot Exception in user code: " + str(ex)
 
 #checks the database for existing watchword and return the previous modifiedTime
 def checkWatchListDB(aWatchWord):
@@ -221,5 +241,3 @@ def insertIntoWatchList(aWatchWord):
     dummydata.save()
   else:
     ModifiedWatchListDB(matchedWord = aWatchWord, modifiedTime = modifiedTime).save()
-
-

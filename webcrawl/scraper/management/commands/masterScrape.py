@@ -72,13 +72,12 @@ def main(args):
 	try:
 		urlArray = []		
 		soup = openURL(url)
-		
 		if url_key == "pastie.org":
-			#addLinksPastie(soup)
-			getHistoricalDataPastie(soup)
-			# for i in range(0,8):
-			# 	soup = openURL(getPastieNextPage(soup))
-			# 	addLinksPastie(soup)
+			addLinksPastie(soup)
+			#getHistoricalDataPastie(soup)
+			for i in range(0,8):
+			 	soup = openURL(getPastieNextPage(soup))
+			 	addLinksPastie(soup)
 		if url_key == "pastebin.com":
 			addLinksPastebin(soup)
 
@@ -225,25 +224,26 @@ def getPastieNextPage(soup):
 
 # extracts all the historical data
 def getHistoricalDataPastie(soup):
-	print soup
-	monthsURLSoup = soup.findAll("div", attrs={"class" : "months"})
-	for eachMonth in monthsURLSoup:
-		linkTag = eachMonth.find("a")
-		print linkTag['']
-		link = urlparse.urljoin("http://pastie.org/", linkTag['href'])
-		getPastieNextPageRecursively(link)
+	if soup.findAll("div", attrs={"class" : "months"}):
+		monthsURLSoup = soup.findAll("div", attrs={"class" : "months"})
+		for eachMonth in monthsURLSoup:
+			linkTag = eachMonth.find("a")
+			print linkTag['href']
+			link = urlparse.urljoin("http://pastie.org/", linkTag['href'])
+			url1Array = getPastieNextPageRecursively(link)
 
 def getPastieNextPageRecursively(nextURL):
 	nextURLSoup = openURL(nextURL)
-	if soup.find(text = "Next page").parent['href']:
-		tag = soup.find(text = "Next page").parent['href']
+	if nextURLSoup.find(text = "Next page"):
+		tag = nextURLSoup.find(text = "Next page").parent['href']
 		nextPage = urlparse.urljoin("http://pastie.org/", tag)
 		print "\n~~~~~~~~~ printing next Page ~~~~~~~~~~\n"
 		print nextPage
 		urlArray.append(nextURL)
-		getPastieNextPageRecursively(nextPage)
+		return getPastieNextPageRecursively(nextPage)
+
 	else:
-		return
+		return urlArray
 
 
 # sets flags to stop scraping function
