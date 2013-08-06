@@ -16,7 +16,6 @@ import re
 
 location = ""
 
-@login_required
 def home(request):
 	global location
 	userInput = UserInputForm
