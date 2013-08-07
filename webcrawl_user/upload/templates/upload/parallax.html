@@ -19,10 +19,10 @@
 
 		<div id="banner">
 			<div id="bannertext">
-				<h3>Cyber Risk Project</h3>
-				<h4>Breach Target Notification</h4>
+				<h3>Dow Jones Cyber Risk</h3>
+				<h4>Breach and Target Notification</h4>
 			</div>
-			<img id="bannerlogo" src="/static/img/jira-logo-scaled.png" width = "100" height= "20"> 
+			<img id="bannerlogo" src="/static/img/jira-logo-scaled.png" width = "90" height= "18"> 
 
 		</div> <!-- end banner -->
 
@@ -30,7 +30,7 @@
 
 			<div id="content">
 				<br>
-				<h2>Breach Target Notification</h2>
+				<h2>Breach and Target Notification</h2>
 				<hr>
 				<p><!-- <span class="bold">Note:</span><br> -->Your watchlist should be formatted with each keyword separated by a newline.<br><br>Example:<br>Joe Smith<br>supersecretdatabase<br>clientDB93<br>plsdonthackme</p>
 				<!-- <p><span class="bold">The Information Security Manager of your company will be notified via e-mail if a possible information leak is discovered.</span></p> -->
@@ -47,7 +47,7 @@
 					<input id="button" class="btn btn-primary" type="submit" name="import" value="Submit" />
 				</form>
 				<hr>
-				<h3>Quick Upload</h3>
+				<h3>Single Word Upload</h3>
 				<form action="{% url "home" %}" method="post" enctype="multipart/form-data">
 					{% csrf_token %}
 					{{ userInput.keyword }}
@@ -58,7 +58,7 @@
 
 			<div id="content-logo">
 				<div id="bannertext-logo">
-					<h3>Upload your watchlists</h3>
+					<h3>Upload watchlist data</h3>
 				</div>
 			</div>
 
