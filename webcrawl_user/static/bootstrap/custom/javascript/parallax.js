@@ -14,6 +14,9 @@ function EasyPeasyParallax() {
         'margin-left': (scrollPos/37.5)+"em",
         'opacity': 0+(scrollPos/500),
     });
+    $('#bannerlogo').css({
+        'opacity': 1-(scrollPos/30),
+    });
 }
 
 function autoHideBannerText(){
