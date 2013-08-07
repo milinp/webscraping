@@ -189,14 +189,14 @@ def sendMail(filePath, fileName,matchingword,latestUrl,latestUrlData):
   part.add_header('Content-Disposition', 'attachment', filename=fileName)
   msg.attach(part)
 
-  screenshotname = takeScreenShots(latestUrl, matchingword)
-  part = MIMEApplication(open(screenshotname, 'rb').read())
-  part.add_header('Content-Disposition', 'attachment', filename=matchingword+'.png')
-  msg.attach(part)
-  try:
-    os.remove(screenshotname)
-  except OSError:
-    pass
+  # screenshotname = takeScreenShots(latestUrl, matchingword)
+  # part = MIMEApplication(open(screenshotname, 'rb').read())
+  # part.add_header('Content-Disposition', 'attachment', filename=matchingword+'.png')
+  # msg.attach(part)
+  # try:
+  #   os.remove(screenshotname)
+  # except OSError:
+  #   pass
   # connect to SES
   try:
     connection =  boto.ses.connect_to_region('us-east-1',aws_access_key_id='AKIAIJZ56E33VC2GBG3Q', aws_secret_access_key='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')
