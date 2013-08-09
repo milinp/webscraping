@@ -14,58 +14,43 @@ sched = Scheduler(standalone = True)
 location = ""
 
 def home(request):
-	if 'run_scraper' in request.POST:
+	global sched
+
+	# if pastebin button is pressed, invoke masterScrape to scrape pastebin archive
+	# scheduler interval of 3 minutes
+	if 'run_scraper_pastebin' in request.POST:
 		logging.basicConfig()
-		global sched
 		sched = Scheduler(standalone = True)
-		args = ['http://pastebin.com/archive', '1', '120000000']
+		args = ['http://pastebin.com/archive', '1', '180']
 		call_command('masterScrape', *args)	
 	
 		def scrape_sched():
 			call_command('masterScrape', *args)
-		sched.add_interval_job(scrape_sched, seconds = 120000000, max_instances = 1000)
+
+		sched.add_interval_job(scrape_sched, seconds = 180, max_instances = 1000)
 		sched.start()
-		return render(request, 'scraper/scraper.html')
 
-
-	if 'stop_scraper' in request.POST:
-		args = ['stop']
-		call_command('masterScrape', *args)
-		sched.shutdown(wait = False)
-
-		return render(request, 'scraper/scraper.html')
-
-	return render(request, 'scraper/scraper.html')
-
-def results(request):
-	if 'run_scraper' in request.POST:
+	# if pastie button is pressed, invoke masterScrape to scrape pastie archive
+	# scheduler interval of 10 minutes 
+	if 'run_scraper_pastie' in request.POST:
 		logging.basicConfig()
-		global sched
 		sched = Scheduler(standalone = True)
-		args = ['http://pastebin.com/archive', '1', '120000000']
+		args = ['http://pastie.org/pastes', '0', '60']
 		call_command('masterScrape', *args)	
 	
-		def scrape_sched():
+		def scrape_sched_pastie():
 			call_command('masterScrape', *args)
-		sched.add_interval_job(scrape_sched, seconds = 120000000, max_instances = 1000)
+
+		sched.add_interval_job(scrape_sched_pastie, seconds = 60, max_instances = 1000)
 		sched.start()
-		return render(request, 'scraper/index.html')
 
-
+	# sets flags to stop scrape function
 	if 'stop_scraper' in request.POST:
 		args = ['stop']
 		call_command('masterScrape', *args)
 		sched.shutdown(wait = False)
 
-		return render(request, 'scraper/index.html')
-
-def stop(request):
-	if 'stop_scraper' in request.POST:
-		args = ['stop']
-		call_command('masterScrape', *args)
-		sched.shutdown(wait = False)
-
-		return render(request, 'scraper/index.html')
+	return render(request, 'scraper/index2.0.html')
 
 def watchlist(request):
 #Handle file upload
@@ -85,43 +70,18 @@ def watchlist(request):
 		call_command('readfile', location)
 
 		sched = Scheduler(standalone = True)
-		
-
-
-		def scrape_sched():
+		def match_sched():
 			call_command('readfile', location)
-		sched.add_interval_job(scrape_sched, seconds = 43200, max_instances = 1000)
+		sched.add_interval_job(match_sched, seconds = 20, max_instances = 1000)
 		sched.start()
 		
 
 	# Load documents for the list page
 	documents = Document.objects.all()
 
-	# Redner list page with the documents and the form
+	# Render list page with the documents and the form
 	return render_to_response(
-		'scraper/watchlist.html',
+		'scraper/index2.0.html',
 		{'documents': documents, 'form' : form},
 		context_instance = RequestContext(request)
 	)
-# def list(request):
-# 	#Handle file upload
-# 	if request.method == "POST":
-# 		form = DocumentForm(request.POST, request.FILES)
-# 		if form.is_valid():
-# 			newdoc = Document(docfile = request.FILES['docfile'])
-# 			newdoc.save()
-
-# 			# Redirect to the document list after POST
-# 			return HttpResponseRedirect(reverse('scraper.vigews.watchlist'))
-# 	else:
-# 		form = DocumentForm() # An empty, unbound form
-
-# 	# Load documents for the list page
-# 	documents = Document.objects.all()
-
-# 	# Redner list page with the documents and the form
-# 	return render_to_response(
-# 		'scraper/watchlist.html',
-# 		{'documents': documents, 'form' : form},
-# 		context_instance = RequestContext(request)
-# 	)

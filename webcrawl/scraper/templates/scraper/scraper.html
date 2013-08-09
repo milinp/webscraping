@@ -3,12 +3,19 @@
 {% block content %}
 	<form action="/" method="post">
 		{% csrf_token %}
-		<input id="button" class="btn btn-primary" type="submit" name="run_scraper" value="Run" />
+		<input id="button" class="btn btn-primary" type="submit" name="run_scraper_pastebin" value="Pastebin" />
 	</form>
+
+    <form action="/" method="post">
+        {% csrf_token %}
+        <input id="button" class="btn btn-primary" type="submit" name="run_scraper_pastie" value="Pastie" />
+    </form>
+
 	<form action="/" method="post">
 		{% csrf_token %}
 		<input id="button" class="btn btn-primary" type="submit" name="stop_scraper" value="Stop" />
 	</form>
+
 	<p class="lead">Import your watchlist.</p>
     <form action="{% url "watchlist" %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}

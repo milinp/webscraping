@@ -74,20 +74,17 @@ body {
    =================== */
 
 .header-container {
-
     border-bottom: 5px solid #e44d26;
 }
 
 .footer-container,
 .main aside {
-
     border-top: 5px solid #e44d26;
 }
 
 .header-container,
 .footer-container,
 .main aside {
-
     background: #F16529;
 }
 

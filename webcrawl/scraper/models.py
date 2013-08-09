@@ -35,19 +35,16 @@ class Document(models.Model):
 		return os.path.dirname(os.path.abspath(scraper.__file__)) + "/media/" + str(m.group(1)) # MEDIA_ROOT + watchlist/name
 
 
-class IndexedTable(models.Model):
-	url = models.CharField(primary_key = True, max_length = 255)
-	urlData = models.TextField()
-	urlInfo = models.TextField()
-	modifiedTime = models.DateTimeField(auto_now = True)
-	def __unicode__(self):
-		return "URL: %s" % self.url
+class ModifiedWatchListDB(models.Model):
+	matchedWord = models.CharField(primary_key = True, max_length = 255)
+	modifiedTime = models.DateTimeField()
 
 		
+#creates model for table scraper_pastiedatabase
 
-class WatchListDB(models.Model):
-	matchedWord = models.TextField()
-	modifiedTime = models.DateTimeField(auto_now = True)
-class ModifiedWatchListDB(models.Model):
-	matchedWord = models.TextField()
-	modifiedTime = models.DateTimeField()
+class PastieEntries(models.Model):
+	url = models.CharField(primary_key = True, max_length = 255)
+	urlData = models.TextField()
+	modifiedTime = models.DateTimeField(auto_now = False)
+	def __unicode__(self):
+		return "URL: %s" % self.url

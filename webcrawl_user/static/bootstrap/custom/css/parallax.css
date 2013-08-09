@@ -1,10 +1,10 @@
 html, body{
   margin: 0 0 0 0;
   padding: 0 0 0 0;
+  height: 100%;
 }
 
 body { 
-  font-family: 'Lucida Grande', 'Helavetica Neue', sans-serif;
   font-size: 13px;
   background: #FFF; 
   font: 400 1.5em/1.5 "Droid Serif", serif; 
@@ -16,30 +16,53 @@ body {
 }
 
 h1 { font-weight: 700; 
-  font-family: "Droid Sans", 
+  font-family: "Droid Serif", 
   sans-serif; font-size: 2.8em; 
   line-height: 1.2; 
 }
 h2 { 
   font-weight: 700; 
   font-size: 1.5em; 
-  font-family: "Droid Sans", sans-serif; 
-  margin: 1em 0; 
+  font-family: "Droid Serif", sans-serif; 
+  margin: 0 0; 
 }
 
 a{
   text-decoration: none;
   color: white;
-  font-family: 'Lucida Grande', 'Helvetica Neue', sans-serif;
+  font-family: "Droid Serif";
+  font-size: 20px;
+}
+a:hover{
+  text-decoration: underline
 }
 
 #banner { 
-  background: url(http://interfacelift.com/wallpaper/D47cd523/03290_formula1grandprix2013montecarlofever_1920x1080.jpg) no-repeat fixed 50% 0; 
+  background: url(/static/img/camera.jpg) no-repeat fixed 100% 0; 
   background-size: cover; 
-  color: #fff; height: 100%; 
+  color: #fff; 
+  height: 100%; 
   width: 100%; 
   overflow: hidden; 
+}
 
+#bannerlogo{
+  position:absolute;
+  top: 70%;
+  left: 47%;
+}
+
+#bannertext { 
+  width: 20em; 
+  position: absolute; 
+  top: 35%; 
+  left: 54%; 
+  border: .25em solid #fff;
+  margin-left: -12em; 
+  padding: 0 0; 
+  -moz-transition: all .2s;
+  -webkit-transition: all .2s;
+  transition: all .2s;
 }
 
 #bannertext:after{
@@ -47,12 +70,12 @@ a{
   display:inline;
   position:absolute;
   top:100%; /*should be set to 100% */
-  left: 40%;
+  left: 42.5%;
   width:0;
   height:1;
   border-color: white transparent transparent transparent; /*border color should be same as div div background color*/
   border-style: solid;
-  border-width: 50px;
+  border-width: 30px;
 }
 
 #bannertext { 
@@ -63,37 +86,96 @@ a{
   border: .5em solid #fff;
   margin-left: -12em; 
   padding: 1em 0; 
+}
+
+#content {
+  background:white;
+  color: black; 
+  text-align: justify;
+  padding-left: 5%;
+  padding-right: 5%;
+  height: 90%;
+  width: 30%;
+  font-size:15px;
+  float:left;
+}
+
+#content-container{
+  background: url(/static/img/blue.jpg) no-repeat 100% 50%; 
+  height: 100%;
+}
+
+#content-logo{
+  height: 90%;
+  width: 60%; 
+}
+
+#bannertext-logo { 
+  opacity:0;
+  position:absolute;
+  color: #fff;
+  height: 10%;
+  width: 30%;
+  top: 135%; 
+/*  left: 52.5%; */ 
+  left: 20%;
+  border: .25em solid #fff;
+  padding: 0 1em 1em 1em;
   -moz-transition: all .2s;
   -webkit-transition: all .2s;
   transition: all .2s;
 
 }
 
-#content {
-  max-width: 50em; 
-  text-align: justify; 
-  margin: 0 auto; 
-  padding: 2em; 
-  height: 82%;
-  font-size:15px;
+#bannertext-logo:after{
+  content:'';
+  display:inline;
+  position:absolute;
+  top:30%; /*should be set to 100% */
+  right: 101%;
+  width:0;
+  height:1;
+  border-color: white transparent transparent transparent; /*border color should be same as div div background color*/
+  border-style: solid;
+  border-width: 20px;
+ -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 
-#content p { 
-  margin: 0 0 2em; 
+#content-footer{
+  background: #F16529;
+  height:10%;
+  width: 40%;
+  clear:left;
+  float:left;
+  text-align:center;
+}
+
+#content-footer-inner{
+  text-align: center;
+  padding-top: 3%;
+}
+
+.bold{
+  font-weight:bold;
 }
 
 .shadow {
-    -moz-box-shadow: 0 0 20px #fff;
+  -moz-box-shadow: 0 0 20px #fff;
   -webkit-box-shadow: 0 0 20px #fff;
   box-shadow: 0px 0px 20px #fff;
-    -webkit-transition: all 1s linear;
-    -o-transition: all 1s linear;
-    -moz-transition: all 1s linear;
-    -ms-transition: all 1s linear;
-    -kthtml-transition: all 1s linear;
-    transition: all 1s linear;
+  -webkit-transition: all 1s linear;
+  -o-transition: all 1s linear;
+  -moz-transition: all 1s linear;
+  -ms-transition: all 1s linear;
+  -kthtml-transition: all 1s linear;
+  transition: all 1s linear;
 }
 
+/*
 #file-exploit::-webkit-file-upload-button {
   visibility: hidden;
 }
@@ -115,12 +197,13 @@ a{
 }
 
 #text {
+<<<<<<< HEAD
     /*opacity: 0;
-    filter: alpha(opacity=0);*/
+    filter: alpha(opacity=0);
     position: absolute;
     left: -9999px;
+ 
 }
-
 
 input.file {
   width: 150px;
@@ -186,3 +269,4 @@ div.file_upload input {
   cursor: pointer;
   opacity: 0;
 }
+*/
