@@ -1,5 +1,12 @@
 <h2>How to start admin(scraper) side or client-facing side:</h2>
-So after you've forked the repo, cd into the directory of either the admin/client django project folder
+<p>The version of python used in the project is 2.7.5</p>
+<p>Make sure you have pip installed: https://pypi.python.org/pypi/pip</p>
+<p>Or if you live on the edge, you can easy_install it:</p>
+<p><code>easy_install pip</code></p> 
+<p>It is not recommended that you install pip using easy_install due to pip not using SSL for downloading packages from PyPI, and thus leaving users more vulnerable to security threats. </p>
+<p>So now that you have pip, you can easily download all the required modules by doing:</p>
+<p><code>pip install -r requirements.txt</code></p>
+So after you've forked the repo and installed the required modules, cd into the directory of either the admin/client django project folder
 <p><code>cd /directory/of/djangoproject</code></p>
 The manage.py file acts as a wrapper around the django-admin.py file. The manage.py file can be utilized to host your application locally by running this command on the terminal:
 <p><code>python manage.py runserver</code></p>
