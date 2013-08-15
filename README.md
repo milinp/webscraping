@@ -14,18 +14,23 @@
 <p><code>cd /directory/of/djangoproject</code></p>
 <p>The manage.py file acts as a wrapper around the django-admin.py file. The manage.py file can be utilized to host your application locally by running this command on the terminal:</p>
 <p><code>python manage.py runserver</code></p>
-<p>or for short if you have the permissions:</p>
+<p>or for short, if you have the permissions:</p>
 <p><code>./manage.py runserver</code></p>
 <p>runserver by default runs on port 8000, so you can specify the IP and port by giving it another argument. For example:</p>
-<p>runs application on port 127.0.0.1:1337:</p> <p><code>./manage.py runserver 1337</code></p>
-<p>runs application on all IPs your machine can support instead of only the loopback interface:</p> <p><code>./manage.py runserver 0.0.0.0:8888</code></p>
+
+<p><code>./manage.py runserver 1337</code></p>
+<p>runs application on port 127.0.0.1:1337:</p> 
+
+<p><code>./manage.py runserver 0.0.0.0:8888</code></p>
+<p>runs application on all IPs your machine can support instead of only the loopback interface:</p> 
+
 <p>For more information on managepy / django-admin.py the django website provides excellent documentation. https://docs.djangoproject.com/en/1.5/ref/django-admin/</p>
 <p>Once your development server is running, access the IP through the browser.</p>
 
 <h2>Admin Interface</h2>
-![Alt text](/assets/admin.png "Optional title")
-![Alt text](/assets/admin-2.png "Optional title")
+![Oopsie](/assets/admin.png "Admin-1")
+![Daisy](/assets/admin-2.png "Admin-2")
 
 <h2>Client Interface</h2>
-![Alt text](/assets/client.png "Optional title")
-![Alt text](/assets/client-2.png "Optional title")
+![Boo](/assets/client.png "Client-1")
+![Wahhh](/assets/client-2.png "Client-2")
