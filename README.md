@@ -1,6 +1,8 @@
 <h2>Setting Up</h2>
-<p>So after you've forked the repo it's time to make sure you have the proper environment before you can run our application.</p>
-<p>The version of python used in the project is 2.7.5</p>
+<p>This web application was built in Python on the Django web-framework.</p>
+<p>Python version: 2.7.5<br>
+Django version: 1.5.1</p>
+<p>So after you've forked the repo it's time to make sure you have the proper environment in order to run the application.</p>
 <p>Make sure you have pip installed: https://pypi.python.org/pypi/pip</p>
 <p>Or if you live on the edge, you can easy_install it:</p>
 <p><code>easy_install pip</code></p> 
@@ -8,6 +10,7 @@
 <p>So now that you have pip, you can easily download all the required modules using our requirements.txt:</p>
 <p><code>pip install -r requirements.txt</code></p>
 <p>Note: you might want to set up a virtual environment, using <a href="http://www.virtualenv.org/en/latest/">virtualenv</a></p> 
+<p>At this point, you should have Python 2.7, Django 1.5.1, and all the other modules required installed on your environment.</p>
 
 <h2>How to start admin(scraper) side or client-facing side:</h2>
 <p>So after everything is set up, cd into the directory of either the admin/client django project folder</p>
@@ -25,7 +28,7 @@
 <p>runs application on all IPs your machine can support instead of only the loopback interface</p> 
 
 <p>For more information on manage.py / django-admin.py the django website provides excellent documentation. https://docs.djangoproject.com/en/1.5/ref/django-admin/</p>
-<p>Once your development server is running, access the IP through the browser.</p>
+<p>Once your development server is running, access the IP through the browser, and now you should now be able to interact with the app.</p>
 
 <h2>Admin Interface</h2>
 ![Oopsie](/assets/admin.png "Admin-1")
@@ -34,3 +37,6 @@
 <h2>Client Interface</h2>
 ![Boo](/assets/client.png "Client-1")
 ![Wahhh](/assets/client-2.png "Client-2")
+
+<h2>More...</h2>
+<p>Look <a href="https://github.com/siqbal00/webscraping/wiki/Project-Overview">here</a> for further documentation on the overall project.</p>
