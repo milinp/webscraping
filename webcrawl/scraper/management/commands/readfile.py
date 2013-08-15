@@ -110,12 +110,13 @@ def scanDatabaseForMatchList(watchListFile, aFileName):
   f = open(os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s_%d' % (aFileName, i) +'.txt', 'w')
   for match in watchlist:
     try:
+      matchingword = match.rstrip()
       # checks for the previous time stored in scraper_modifiedwatchlistdb whenever this watch word was sent or updated
-      time = str(checkWatchListDB(match))
+      time = str(checkWatchListDB(matchingword))
 
       #gets the current time
       newModifiedTime = datetime.datetime.utcnow().replace(tzinfo = utc).strftime('%Y-%m-%d %H:%M:%S')
-      matchingword = match.rstrip()
+    
 
       #sql statement to check a match for the particular matching word between the previous stored time and the current time
       sqlPastebin = "SELECT * FROM scraper_dummyvisited WHERE urlData LIKE '%%%s%%' AND modifiedTime Between '%s' AND '%s';"  % (matchingword, time, newModifiedTime  )
@@ -127,21 +128,24 @@ def scanDatabaseForMatchList(watchListFile, aFileName):
 
       sqlPastie = "SELECT * FROM scraper_pastieentries WHERE urlData LIKE '%%%s%%' AND modifiedTime Between '%s' AND '%s';"  % (matchingword, time, newModifiedTime  )
       print sqlPastie
+      print "\n\n"
       cursorPastie.execute(sqlPastie)
       resultsPastie = cursorPastie.fetchall()
       results = resultsPastie + resultsPastebin 
       for row in results:
         # getting the filename and file path name
         fileName = "%s_%d.txt" %(aFileName, i)
-        filePathName =  os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s_%d' % (aFileName, i) +'.txt' 
+        filePathName =  os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s' % (fileName)
         urlname = '%s-%d.png' % (matchingword , i)
         # stripping the escaping for the matches
         matches=re.findall(r'\'(.+?)\'',str(row))
-        directoryName = os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s' % (aFileName) +'.txt'
+        directoryName = os.path.dirname(os.path.abspath(scraper.__file__)) + '\media\Matches\%s' % (fileName)
         tempFileSize = os.path.getsize(filePathName)  
-
+        print "tempFileSize printing"
+        print tempFileSize
         #checking the fileSize of the attachment which should be less than 20mb
         fileSize = float(tempFileSize)
+        print fileSize
         if fileSize < 20000000:
           f = open(filePathName, 'a')
           f.write("\n\n\n-------------------------------------------------------------------------------------------------------\n\n")
@@ -152,13 +156,12 @@ def scanDatabaseForMatchList(watchListFile, aFileName):
           f.write("-------------------------------------------------------------------------------------------------------\n")
           f.close()
           notificationWatchword = matchingword
-
           # once the matchingword has been found stored in the database.
-          insertIntoWatchList(match)
         else:
           listOfFiles.add(fileName);
           i = i + 1
         # this fetches the last updated URL and the content stored in the URL
+        insertIntoWatchList(matchingword)
         latestUrl = results[-1][0]
         latestUrlData = results[-1][1]
       #print "Printing the list of files \n\n\n\n"
@@ -176,8 +179,8 @@ def scanDatabaseForMatchList(watchListFile, aFileName):
 def sendMail(filePath, fileName,matchingword,latestUrl,latestUrlData):
   msg = MIMEMultipart()
   msg['Subject'] = 'Dow Jones Cyber Security Risk Notification'
-  msg['From'] = 'astroprasad@gmail.com'
-  addresses = ['pranav16@gmail.com','pranavkumar.patel@dowjones.com']
+  msg['From'] = 'pranavkumar.patel@dowjones.com'
+  addresses = ['pranav16@gmail.com','astroprasad@gmail.com', 'pranavkumar.patel@dowjones.com']
 
   # what a recipient sees if they don't use an email reader
   msg.preamble = 'Multipart message.\n'
@@ -189,14 +192,14 @@ def sendMail(filePath, fileName,matchingword,latestUrl,latestUrlData):
   part.add_header('Content-Disposition', 'attachment', filename=fileName)
   msg.attach(part)
 
-  screenshotname = takeScreenShots(latestUrl, matchingword)
-  part = MIMEApplication(open(screenshotname, 'rb').read())
-  part.add_header('Content-Disposition', 'attachment', filename=matchingword+'.png')
-  msg.attach(part)
-  try:
-    os.remove(screenshotname)
-  except OSError:
-    pass
+  # screenshotname = takeScreenShots(latestUrl, matchingword)
+  # part = MIMEApplication(open(screenshotname, 'rb').read())
+  # part.add_header('Content-Disposition', 'attachment', filename=matchingword+'.png')
+  # msg.attach(part)
+  # try:
+  #   os.remove(screenshotname)
+  # except OSError:
+  #   pass
   # connect to SES
   try:
     connection =  boto.ses.connect_to_region('us-east-1',aws_access_key_id='AKIAIJZ56E33VC2GBG3Q', aws_secret_access_key='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')
@@ -229,6 +232,7 @@ def checkWatchListDB(aWatchWord):
   if not ModifiedWatchListDB.objects.filter(matchedWord = aWatchWord).exists():
     return "00:00:00"
   else:
+    modifiedWatchlistDB = ""
     modifiedWatchlistDB = ModifiedWatchListDB.objects.get(matchedWord = aWatchWord)  
     return modifiedWatchlistDB.modifiedTime.strftime('%Y-%m-%d %H:%M:%S')
  
@@ -236,8 +240,9 @@ def checkWatchListDB(aWatchWord):
 def insertIntoWatchList(aWatchWord):
   modifiedTime = datetime.datetime.utcnow().replace(tzinfo = utc)
   if ModifiedWatchListDB.objects.filter(matchedWord = aWatchWord).exists():
-    dummydata = ModifiedWatchListDB.objects.get(matchedWord = aWatchWord)
-    dummydata.modifiedTime = modifiedTime
-    dummydata.save()
+     dummydata = ModifiedWatchListDB.objects.get(matchedWord = aWatchWord)
+     dummydata.modifiedTime = modifiedTime
+     dummydata.save()
+    #ModifiedWatchListDB(matchedWord = aWatchWord, modifiedTime = modifiedTime).save()
   else:
     ModifiedWatchListDB(matchedWord = aWatchWord, modifiedTime = modifiedTime).save()
